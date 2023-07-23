@@ -14,8 +14,8 @@ export class AuthService {
         private jwtService: JwtService
     ){}// 여기가 body부분이라는데 무슨기능일까??
 
-    async signUp(authCredentialDto) : Promise<void>{ //signUp 메소드 제작
-        return this.userRepository.createUser(authCredentialDto); // 값 아무것도 없는데 왜 return 해줘야할까?? --> 그니까 null값이고 promise도 void로 잡았지
+    async signUp(authCredentialDto,uid) : Promise<void>{ //signUp 메소드 제작
+        return this.userRepository.createUser(authCredentialDto,uid); // 값 아무것도 없는데 왜 return 해줘야할까?? --> 그니까 null값이고 promise도 void로 잡았지
     } // 회원가입때는 반환값있으면 'null 값이 not null 제약조건을 위반' 이 뜬다.
 
     async signIn(uid): Promise<User>{
