@@ -7,8 +7,8 @@ import { Repository } from "typeorm";
 
 @CustomRepository(User) // user를 수정하는 커스텀 repository 라고 인식시켜주는 놈인듯
 export class UserRepository extends Repository<User> {
-    async createUser(authCredentialDto: AuthCredentialsDto): Promise<void> {
-        const { username, Email, uid } = authCredentialDto;
+    async createUser(authCredentialDto: AuthCredentialsDto,uid): Promise<void> {
+        const { username, Email } = authCredentialDto;
 
         const user = this.create({
             username : username,
