@@ -1,0 +1,36 @@
+import { Body, Controller, Get, Post, Query, Req, UseGuards, ValidationPipe } from '@nestjs/common';
+import { AuthService } from './auth.service';
+import { AuthCredentialsDto } from './DTO/auth-credential.dto';
+import { User } from './user.entity';
+import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from './jwt-auth.guard';
+
+@Controller('auth')
+export class AuthController {
+    constructor( private authService: AuthService){}// controller에서 service 쓰려면 만들어 줘야함
+
+    @Get('/username') // 파이어베이스에서 유저네임 등록 및 중복여부 확인  -- 회원가입 전에 닉네임 만들기
+    checkUsername(@Query(ValidationPipe) username : string):Promise<boolean>{
+        return this.authService.checkUsername(username) // 가능 불가능을 ture false로 반환해줌
+    }
+
+    @Post('/signup') // 파이어베이스에서 회원가입한 경우  -- 여긴 토큰 필요없음
+    @UseGuards(JwtAuthGuard)
+    signUp(
+        @Body(ValidationPipe) authCredentialsDto:AuthCredentialsDto
+        ): Promise<void> { 
+        return this.authService.signUp(authCredentialsDto);
+    }
+
+    @Post('/signin') // 파이어베이스 에서 로그인한 경우  -- 여기도 토큰 필요없음 근데 토큰을 반환할 예정
+    @UseGuards(JwtAuthGuard)
+    signIn(
+        //@Req() req,
+        @Body() uid: string
+    ): Promise <User> {
+        // const token = req.headers.authorization.split(' ')[1]; // Bearer your-jwt-token인데 공백으로 분리해 앞에놈만 가져온거임
+        return this.authService.signIn(uid);
+    }
+
+    
+}

@@ -1,0 +1,9 @@
+{
+    "apps": [
+      {
+        "name": "nestjs-image-uploader",
+        "script": "npm",
+        "args": "run start:prod"
+      }
+    ]
+  }
