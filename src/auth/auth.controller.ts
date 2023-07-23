@@ -16,20 +16,19 @@ export class AuthController {
 
     @Post('/signup') // 파이어베이스에서 회원가입한 경우  -- 여긴 토큰 필요없음
     @UseGuards(JwtAuthGuard)
-    signUp(
+    signUp(@Req() req,
         @Body(ValidationPipe) authCredentialsDto:AuthCredentialsDto
         ): Promise<void> { 
-        return this.authService.signUp(authCredentialsDto);
+        return this.authService.signUp(authCredentialsDto,req.uid);
     }
 
     @Post('/signin') // 파이어베이스 에서 로그인한 경우  -- 여기도 토큰 필요없음 근데 토큰을 반환할 예정
     @UseGuards(JwtAuthGuard)
     signIn(
-        //@Req() req,
-        @Body() uid: string
+         @Req() req
     ): Promise <User> {
         // const token = req.headers.authorization.split(' ')[1]; // Bearer your-jwt-token인데 공백으로 분리해 앞에놈만 가져온거임
-        return this.authService.signIn(uid);
+        return this.authService.signIn(req.uid);
     }
 
     
