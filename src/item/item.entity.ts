@@ -9,7 +9,7 @@ export class Item extends BaseEntity{
     id: number;
 
     @Column()
-    title: string;
+    title: string;  // 이름으로 검색 만듬
 
     @Column()
     description: string;
@@ -21,7 +21,7 @@ export class Item extends BaseEntity{
     updatedAt: Date;
 
     @Column()
-    price: number;
+    price: number;  // 가격대별 오름 or 내림차순 정렬 만들기
 
     @Column()
     status: ItemStatus;
@@ -33,7 +33,7 @@ export class Item extends BaseEntity{
     ImageUrls: Array<string>; // string으로 해야하지 itemImage 는 함수로 써야지 데이터타입이 될 수 가 없다.
 
     @ManyToOne(type => User, user=> user.items, {eager: false})
-    user: User
+    user: User  // 내가 올린 물건 구현 완료
 
     // 이거 나중에 로그인 구현된거랑 합치면 유저별로 item과 이어주어서 내가 올린물건찾는기능 & 특정유저 올린물건 찾는기능 구현하기
 }

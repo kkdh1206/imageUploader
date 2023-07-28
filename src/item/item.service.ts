@@ -20,11 +20,11 @@ export class ItemsService {
         return this.itemRepository.createItem(createItemDto,images)
     }
 
-    async getItemById(id: number): Promise <Item> {
-        const found = await this.itemRepository.findOneBy({id}); 
+    async getItemByTitle(title: string): Promise <Item[]> {
+        const found = await this.itemRepository.find({where: {title :title}}); 
 
         if(!found) {
-            throw new NotFoundException(`Can't find Item with id ${id}`);
+            throw new NotFoundException(`Can't find Item with id ${title}`);
         }
         return found;
     }
@@ -43,8 +43,9 @@ export class ItemsService {
     async getItemByCategory (category: ItemCategory): Promise<Item[]> { // 카테고리 별로 찾는것
         const item = await this.itemRepository.findBy({category}); // where 은 어디서 찾는지인듯 여기서는 : FindoptionsWhere<Item> 즉, entity에서 찾는다
         // findOneby로 하면 하나만 찾아와서 안된다
-        const found = await this.itemRepository.findOneBy({category});
-        if (!found) {
+        // const found = await this.itemRepository.findOneBy({category});
+        // console.log(found);
+        if (item == null) {
             throw new NotFoundException(`Can't find Item with category ${category}`);
         }
         return item;
@@ -53,7 +54,9 @@ export class ItemsService {
 
      async getItemByStatus (category: ItemCategory,status: ItemStatus): Promise<Item[]> { // status 찾는것
         const itemstatus = await this.itemRepository.findBy({status}); 
+        console.log(itemstatus);
         const categoryFound = await this.itemRepository.findOneBy({category});
+        console.log(categoryFound);
         if (!categoryFound) {
             throw new NotFoundException(`Can't find Item with category ${category}`);
         }

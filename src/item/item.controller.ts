@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Patch, Delete, UploadedFile, UploadedFiles, UseInterceptors, UsePipes, ValidationPipe, UseGuards, Req } from "@nestjs/common";
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Patch, Delete, UploadedFile, UploadedFiles, UseInterceptors, UsePipes, ValidationPipe, UseGuards, Req, Query } from "@nestjs/common";
 import { ItemsService } from "./item.service";
 import { Item } from "./item.entity";
 import { CreateItemDto } from "./DTO/create-item.dto";
@@ -13,7 +13,7 @@ import { AuthService } from "src/auth/auth.service";
 
 // 가드 추가하기 -- > 유저 판단용 아이템차원에서  --> user = uuid 로 찾아줘서 선언해놓기
 @Controller('items')
-@UseGuards(JwtAuthGuard) 
+// 잠시꺼놓은것 테스트후 복구할 것 @UseGuards(JwtAuthGuard) 
 export class ItemsController {
     constructor(private itemsService: ItemsService,
                 private itemImage: ItemImage
@@ -25,9 +25,13 @@ export class ItemsController {
         return this.itemsService.getAllItems(); // fltter 에 json 형태로 데이터 가면 변환해줘야함
     }
 
-    @Get('/:id')  // id 별로 들어갈수 있게 해서 결론적으로 카테고리에서 검색해서 들어가든지 아니면 전체 아이템중에 찾아서 들어가든지 들어가면 items/:id 로 Get 하여 접근하게 만듬 
-    getItemId(@Param('id') id:number) : Promise<Item> { 
-        return this.itemsService.getItemById(id);
+    // Get(':id)
+
+    // @Get('search')  -> /search?title="Dsdsdd%34%dsd&category=dddd&status"
+    // @Query('title') title;    
+    @Get('title/:title')  // id 별로 들어갈수 있게 해서 결론적으로 카테고리에서 검색해서 들어가든지 아니면 전체 아이템중에 찾아서 들어가든지 들어가면 items/:id 로 Get 하여 접근하게 만듬 
+    getItemId(@Param('title') title:string) : Promise<Item[]> {  // 주소뒤에 title 적어서 접근하면 받아오게 만듬
+        return this.itemsService.getItemByTitle(title);
     }
 
     @Get('/myItems') 
@@ -38,7 +42,7 @@ export class ItemsController {
     }
 
 
-    @Get('/:category') // 카테고리별 검색
+    @Get('category/:category') // 카테고리별 검색   ----> 더 좋은 방법 강구하기 너무 이 방법은 좀 별로인듯;;
     getItemdByCategory(
         @Param('category') category: ItemCategory
     ): Promise<Item[]> {
@@ -90,7 +94,7 @@ export class ItemsController {
     //         return this.itemsService.updateItem(id,status, image)
     //     }
     
-    @Delete('/:id')
+    @Delete('/:id') // 지웠다 표시만 나게 --> 나중에 검색해도 안나오게는 처리필요
     deleteItem(@Param('id',ParseIntPipe) id, 
     // @GetUser() user: User
     ): Promise<void>{

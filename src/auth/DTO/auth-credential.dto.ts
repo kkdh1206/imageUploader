@@ -8,7 +8,6 @@ export class AuthCredentialsDto {
 
     Email: string;
 
-    uid: string;
 }
 
 // 일단 dto 그대로 긁어 왔지만 이거 말고 여기다가 파이어베이스에서 받은거 가져와서 써야할듯
