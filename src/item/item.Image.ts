@@ -3,6 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { CustomRepository } from "src/configs/typeorm-ex.decorator";
 import { Item } from "./item.entity";
 import { firstValueFrom, map } from "rxjs";
+import * as config from 'config';
 import { Repository } from "typeorm";
 import { buffer } from "stream/consumers";
 import { Injectable } from "@nestjs/common";
@@ -20,8 +21,10 @@ export class ItemImage {
     private readonly configService: ConfigService,      // 사실 필요가 없다... env 설정때 쓰는놈
   ) {}
 
+
   async uploadImage(image: Express.Multer.File) { // 사진 한개 업로드 해주는 함수
-    const url = 'https://api.imgbb.com/1/upload?key=9546d939dde7d1d7c00daa5fd6b61934'; // 하나의 주소로 보내주면 알아서 imgbb가 처리해줌
+    const apiConfig = config.get('api');
+    const url = apiConfig.imgbb; // 하나의 주소로 보내주면 알아서 imgbb가 처리해줌
 
     // 서버에는 config 파일이 있지만 개발할때 안보여주려고 config 처리해주는것!
 
