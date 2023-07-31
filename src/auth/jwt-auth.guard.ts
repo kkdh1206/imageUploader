@@ -25,7 +25,7 @@ export class JwtAuthGuard implements CanActivate {
                 // const user = await service.getUser(uid) // firebase uid를 가진 유저가 우리 db에 있는거 가져오기
       //  req,user = user; 
             req.user = await this.authService.signIn(decodedToken.uid)// uuid 로 바꾸주기   uuid는 nestjs의 id   uid는 파이어베이스의 아이디
-            
+            req.uid = decodedToken.uid
             return true;            
         } catch(e) {
             console.log(e);
