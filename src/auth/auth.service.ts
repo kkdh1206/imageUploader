@@ -5,6 +5,7 @@ import { User } from './user.entity';
 import * as bcrypt from 'bcryptjs';
 import { stringify } from 'querystring';
 import { JwtService } from '@nestjs/jwt';
+import { UserStatus } from './user-status.enum';
 
 @Injectable()
 export class AuthService {
@@ -35,6 +36,14 @@ export class AuthService {
         console.log(exist);
         if (exist == null){return true}
         else {return false}
+    }
+
+    async patchUserStatus(id:number, status:UserStatus){
+        const user = await this.userRepository.findOneBy({id});
+        user.userstatus = status;
+        await this.userRepository.save(user);
+
+        return user
     }
     
 }

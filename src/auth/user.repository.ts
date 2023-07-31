@@ -4,6 +4,7 @@ import { AuthCredentialsDto } from "./DTO/auth-credential.dto";
 import { ConflictException, InternalServerErrorException } from "@nestjs/common";
 import * as bcrypt from 'bcryptjs'
 import { Repository } from "typeorm";
+import { UserStatus } from "./user-status.enum";
 
 @CustomRepository(User) // user를 수정하는 커스텀 repository 라고 인식시켜주는 놈인듯
 export class UserRepository extends Repository<User> {
@@ -13,7 +14,8 @@ export class UserRepository extends Repository<User> {
         const user = this.create({
             username : username,
             Email : Email,
-            uid: uid 
+            uid: uid, 
+            userstatus : UserStatus.NORMAL
         }); // password를 저장할때 hash처리된 놈을 보안을 위해 저장
         console.log(user);
         try{ // user Entity에 저장하는 코드

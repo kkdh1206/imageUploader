@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Post, Query, Req, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query, Req, UseGuards, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthCredentialsDto } from './DTO/auth-credential.dto';
 import { User } from './user.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { JwtAuthGuard2 } from './jwt-auth.guard2';
+import { UserStatus } from './user-status.enum';
 
 @Controller('auth')
 export class AuthController {
@@ -37,6 +38,18 @@ export class AuthController {
         // const token = req.headers.authorization.split(' ')[1]; // Bearer your-jwt-token인데 공백으로 분리해 앞에놈만 가져온거임
         return this.authService.signIn(req.uid);
     }
+
+    @Patch('/patch/status/:id')
+    @UseGuards(JwtAuthGuard)
+    patchUserStatus(
+        @Req() req,  
+        @Param('id') id:number,
+        @Body('status') status:UserStatus
+    ): Promise<User>{
+        if (req.user.status==UserStatus.ADMIN){
+        return this.authService.patchUserStatus(id, status);
+    } 
+}
 
     
 }

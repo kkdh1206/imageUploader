@@ -10,3 +10,10 @@ export enum ItemCategory{
     REFRIGERATOR = 'REFRIGERATOR',
     ETC = 'ETC'
 }
+
+export enum SortType{
+    'PRICEASCEND' = 'PRICEASCEND',
+    'PRICEDESCEND' = 'PRICEDESCEND',
+    'DATEASCEND' = 'DATEASCEND',
+    'DATEDESCEND' = 'DATEDESCEND',
+}
