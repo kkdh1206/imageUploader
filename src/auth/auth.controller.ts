@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, Req, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query, Req, UploadedFile, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthCredentialsDto } from './DTO/auth-credential.dto';
 import { User } from './user.entity';
@@ -6,6 +6,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { JwtAuthGuard2 } from './jwt-auth.guard2';
 import { UserStatus } from './user-status.enum';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('auth')
 export class AuthController {
@@ -51,5 +52,17 @@ export class AuthController {
     } 
 }
 
-    
+    @Patch('/patch/userinformation/:id')
+    @UseGuards(JwtAuthGuard)
+    @UseInterceptors(FilesInterceptor('image'))
+    patchUserInformation(
+        @UploadedFile() image: Express.Multer.File,
+        @Req() req, 
+        @Body() username: string
+    ): Promise<User> {
+        return this.authService.patchUserInformation(image, req.uid, username);
+    } 
 }
+
+    
+

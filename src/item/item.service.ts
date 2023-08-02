@@ -33,12 +33,12 @@ export class ItemsService {
 
     async updateItem(id:number, createItemDto:CreateItemDto, images: Array<string>):Promise<Item>{
         const item = await this.getItemById(id);
-        const {title, description, category, price, status} = createItemDto;
+        const {title, description,  price} = createItemDto;
         item.title = title,
         item.description = description,
-        item.category = category,
+        // item.category = category,
         item.price = price,
-        item.status = status,
+        // item.status = status,
         item.ImageUrls = images,
             
         await this.itemRepository.save(item); // 데이터베이스에 저장하는 save메소드사용 -- 이게 entity 에 이름 맞는곳에 알아서 저장해주는듯

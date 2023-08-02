@@ -9,12 +9,12 @@ import { ItemImage } from "./item.Image";
 @CustomRepository(Item)
 export class ItemRepository extends Repository<Item> {
     async createItem(createItemDto : CreateItemDto, images: Array<string>) : Promise<Item>{
-        const{title, description, category, price, status } = createItemDto;
+        const{title, description, price, } = createItemDto;
         const item = this.create({ // 객체생성
            title,
            description,
-           status,
-           category,
+           status : ItemStatus.TRADING, // status 선택가능하게 저
+           category: ItemCategory.ETC,
            price,
            ImageUrls: images // 배열로 저장하려지만 entity에서 배열이 저장 안되서
         }) // 사진여러개면 배열로 주소 저장

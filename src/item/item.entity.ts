@@ -29,6 +29,9 @@ export class Item extends BaseEntity{
     @Column()
     category: ItemCategory;
 
+    @Column()
+    itemQuality: string;
+
     @Column('simple-array')
     ImageUrls: Array<string>; // string으로 해야하지 itemImage 는 함수로 써야지 데이터타입이 될 수 가 없다.
 

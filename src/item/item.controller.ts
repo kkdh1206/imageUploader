@@ -13,7 +13,7 @@ import { SearchItemDto } from "./DTO/search-item.dto";
 
 
 
-@Controller('items')
+@Controller('items') // 판매완료된 상품은 보이지 않게 하기
 // 잠시꺼놓은것 테스트후 복구할 것 
 @UseGuards(JwtAuthGuard) 
 export class ItemsController {
@@ -90,6 +90,7 @@ export class ItemsController {
         @Body() createItemDto : CreateItemDto, // dto 받는놈
 
     ):Promise<Item>{// 이미지 주소도 가져오기
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.');
     console.log(image);
     console.log(createItemDto); // 이까지 왓는지 확인용
     const imgList = [];

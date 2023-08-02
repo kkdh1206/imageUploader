@@ -6,13 +6,15 @@ import * as bcrypt from 'bcryptjs';
 import { stringify } from 'querystring';
 import { JwtService } from '@nestjs/jwt';
 import { UserStatus } from './user-status.enum';
+import { UserImage } from './user.image';
 
 @Injectable()
 export class AuthService {
     constructor(
         //@InjectRepository(USerRepository)  내가 만든 custom 은 이거 안씀
         private userRepository: UserRepository,
-        private jwtService: JwtService
+        private jwtService: JwtService,
+        private userImage : UserImage
     ){}// 여기가 body부분이라는데 무슨기능일까??
 
     async signUp(authCredentialDto,uid) : Promise<void>{ //signUp 메소드 제작
@@ -45,7 +47,18 @@ export class AuthService {
 
         return user
     }
+
+    async patchUserInformation(image, uid, username){
+        const user = await this.userRepository.findOne({where: {uid :uid}})
+        user.username = username;
+        const imageUrl:string|null = await this.userImage.uploadImage(image);
+        user.imageUrl = imageUrl;
+        await this.userRepository.save(user);
+        return user
+    }
     
 }
+
+   
 
 // string 과 String은 다르다!! 대문자 String은 클래스고 string은 문자열 자료형임

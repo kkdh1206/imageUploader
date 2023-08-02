@@ -1,8 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as firebase from 'firebase-admin';
-import * as serviceAccount from '../loginlogout-a2fce-firebase-adminsdk-jzdcb-d17ecdae08.json';
+import * as serviceAccount from 'supomarket-b55d0-firebase-adminsdk-ca1u5-26b9b49278.json';
+// import * as serviceAccount from '../loginlogout-a2fce-firebase-adminsdk-jzdcb-d17ecdae08.json';
 import * as config from 'config';
+
 
 const firebaseParams = { // json(파이어베이스 Admin SDK json 파일) 을 읽기위해 미리 적어둠
   type: serviceAccount.type,
