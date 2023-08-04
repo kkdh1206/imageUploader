@@ -1,5 +1,5 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { ItemCategory, ItemStatus } from "./item-status.enum";
+import { ItemType, ItemStatus } from "./item-status.enum";
 import { ItemImage } from "./item.Image";
 import { User } from "src/auth/user.entity";
 
@@ -27,10 +27,10 @@ export class Item extends BaseEntity{
     status: ItemStatus;
 
     @Column()
-    category: ItemCategory;
+    category: ItemType;
 
-    @Column()
-    itemQuality: string;
+    // @Column()
+    // itemQuality: string; // 처리해주기
 
     @Column('simple-array')
     ImageUrls: Array<string>; // string으로 해야하지 itemImage 는 함수로 써야지 데이터타입이 될 수 가 없다.

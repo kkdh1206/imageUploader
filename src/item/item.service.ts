@@ -3,15 +3,17 @@ import { ItemRepository } from './item.repository';
 import { Item } from './item.entity';
 import { CreateItemDto } from './DTO/create-item.dto';
 import { ItemImage } from './item.Image';
-import { ItemCategory, ItemStatus, SortType } from './item-status.enum';
+import { ItemType, ItemStatus, SortType } from './item-status.enum';
 import { User } from 'src/auth/user.entity';
 import { Like } from 'typeorm';
 import { SearchItemDto } from './DTO/search-item.dto';
+import { UserRepository } from 'src/auth/user.repository';
 
 @Injectable()
 export class ItemsService {
     constructor(
         private itemRepository: ItemRepository,
+        private userRepository: UserRepository
      ) {}
 
      async getAllItems (): Promise<Item[]> {
@@ -116,7 +118,7 @@ export class ItemsService {
 
 
 
-    async getItemByCategory (category: ItemCategory): Promise<Item[]> { // 카테고리 별로 찾는것
+    async getItemByCategory (category: ItemType): Promise<Item[]> { // 카테고리 별로 찾는것
         const item = await this.itemRepository.find({where:{status: ItemStatus.TRADING|| ItemStatus.FASTSELL}&&{category: category}}); // 팔려나간건 안보여줌
         // const item = await this.itemRepository.findBy({category}); // where 은 어디서 찾는지인듯 여기서는 : FindoptionsWhere<Item> 즉, entity에서 찾는다
         // findOneby로 하면 하나만 찾아와서 안된다
@@ -127,6 +129,25 @@ export class ItemsService {
         }
         return item;
      }
+
+    async deleteInterested ( id: number, user:User ):Promise<User> {
+        const currentUser = await this.userRepository.findOne({where:{uid: user.uid}})
+        currentUser.interestedId.filter((num) => num !== id)
+        this.userRepository.save(currentUser);
+        return currentUser
+    }
+
+    async addInterested ( id: number, user:User ):Promise<User> {
+        const currentUser = await this.userRepository.findOne({where:{uid: user.uid}})
+        currentUser.interestedId.push(id)
+        this.userRepository.save(currentUser);
+        return currentUser
+    }
+
+    async getInterested (user:User):Promise<Array<number>> {
+        const currentUser = await this.userRepository.findOne({where:{uid: user.uid}})
+        return currentUser.interestedId;
+    }
 
 
     //  async getItemByStatus (category: ItemCategory,status: ItemStatus): Promise<Item[]> { // status 찾는것

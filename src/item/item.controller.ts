@@ -4,7 +4,7 @@ import { Item } from "./item.entity";
 import { CreateItemDto } from "./DTO/create-item.dto";
 import { ItemImage } from "./item.Image";
 import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express/multer";
-import { ItemCategory, ItemStatus } from "./item-status.enum";
+import { ItemType, ItemStatus } from "./item-status.enum";
 import { ItemStateValidationPipe } from "./pipes/item-status-validation";
 import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 import { User } from "src/auth/user.entity";
@@ -66,7 +66,7 @@ export class ItemsController {
 
     @Get('category/:category') // 카테고리별 검색   ----> 더 좋은 방법 강구하기 너무 이 방법은 좀 별로인듯;;
     getItemdByCategory(
-        @Param('category') category: ItemCategory
+        @Param('category') category: ItemType
     ): Promise<Item[]> {
         return this.itemsService.getItemByCategory(category); 
     }
@@ -90,7 +90,7 @@ export class ItemsController {
         @Body() createItemDto : CreateItemDto, // dto 받는놈
 
     ):Promise<Item>{// 이미지 주소도 가져오기
-        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.');
+        // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.');
     console.log(image);
     console.log(createItemDto); // 이까지 왓는지 확인용
     const imgList = [];
@@ -107,7 +107,7 @@ export class ItemsController {
 }
 
     @Patch('/myItems/patch/item/:id') // 아이템 수정하는 기능
-    @UsePipes(ValidationPipe)
+    // @UsePipes(ValidationPipe)
     @UseInterceptors(FilesInterceptor('image')) // 여기서 파일을 가져옴  ('image' == postman 에서 키랑 같다)키를 가진놈을 인터셉트하는것
     async updateItem(
         @UploadedFiles() image: Array<Express.Multer.File>,
@@ -121,6 +121,34 @@ export class ItemsController {
 
             return this.itemsService.updateItem(id,  createItemDto, imgList)
         }
+
+       
+        
+
+    @Post('/myInterestedItem/:id')
+    async addInterested(
+        @Req() req,
+        @Param('id') id:number
+    ):Promise<User>{
+        return this.itemsService.addInterested(id, req.user);
+    }
+
+    @Patch('/myInterestedItem/:id')
+    async deleteInterested(
+        @Req() req,
+        @Param('id') id:number
+    ):Promise<User>{
+        return this.itemsService.deleteInterested(id, req.user);
+    }
+
+
+
+    @Get('/myInterestedItem')
+    async getInterested(
+        @Req() req
+    ): Promise <Array<number>>{
+        return this.itemsService.getInterested(req.user);
+    }
 
 
     

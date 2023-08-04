@@ -12,13 +12,21 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 export class AuthController {
     constructor( private authService: AuthService){}// controller에서 service 쓰려면 만들어 줘야함
 
-    @Get('/username') // 파이어베이스에서 유저네임 등록 및 중복여부 확인  -- 회원가입 전에 닉네임 만들기
-    checkUsername(@Body(ValidationPipe) authCredentialsDto:AuthCredentialsDto):Promise<boolean>{
-        console.log(authCredentialsDto);
-        const {username, Email} = authCredentialsDto
-        // console.log('!!!!!!!!!!!!!!!!');
-        // console.log(username);
-        return this.authService.checkUsername(username); // 가능 불가능을 ture false로 반환해줌
+    // @Get('/username') // 파이어베이스에서 유저네임 등록 및 중복여부 확인  -- 회원가입 전에 닉네임 만들기
+    // checkUsername(@Body(ValidationPipe) authCredentialsDto:AuthCredentialsDto):Promise<boolean>{
+    //     console.log(authCredentialsDto);
+    //     const {username, Email} = authCredentialsDto
+    //     // console.log('!!!!!!!!!!!!!!!!');
+    //     // console.log(username);
+    //     return this.authService.checkUsername(username); // 가능 불가능을 ture false로 반환해줌
+    // }
+
+
+    @Get('/userInfo') // 파이어베이스에서 유저네임 등록 및 중복여부 확인  -- 회원가입 전에 닉네임 만들기
+    @UseGuards(JwtAuthGuard2)
+    getUserInfo(@Req() req):Promise<User>{
+    
+        return this.authService.getUser(req.uid) // 가능 불가능을 ture false로 반환해줌
     }
 
     @Post('/signup') // 파이어베이스에서 회원가입한 경우  -- 여긴 토큰 필요없음
@@ -62,6 +70,7 @@ export class AuthController {
     ): Promise<User> {
         return this.authService.patchUserInformation(image, req.uid, username);
     } 
+
 }
 
     

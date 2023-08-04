@@ -26,8 +26,15 @@ export class AuthService {
         const user = await this.userRepository.findOne({where: {uid: uid}});
         if(user == null){
             console.log('user 존재하지 않음')
-            // 만약에라도 발생할 오류에 대해 대비가 되면 좋을듯??
+            console.log(`current user ===== ${user}`);
+            // 만약에라도 발생할 오류에} 대해 대비가 되면 좋을듯??
         }
+        return user
+    }
+
+    async getUser(uid):Promise<User>{
+        const user = await this.userRepository.findOne({where: {uid: uid}});
+        console.log(`getUser의 current user ===== ${user}`);
         return user
     }
 
@@ -47,6 +54,7 @@ export class AuthService {
 
         return user
     }
+
 
     async patchUserInformation(image, uid, username){
         const user = await this.userRepository.findOne({where: {uid :uid}})

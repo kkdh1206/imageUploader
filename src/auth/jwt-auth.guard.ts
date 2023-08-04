@@ -13,13 +13,13 @@ export class JwtAuthGuard implements CanActivate {
         
         ) {}
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        const req = context.switchToHttp().getRequest();
-        const bearerToken = req.headers.authorization;
-        const token = bearerToken.replace("Bearer ", '');
+        var req = context.switchToHttp().getRequest();
+        var bearerToken = req.headers.authorization;
+        var token = bearerToken.replace("Bearer ", '');
         // 토큰 검증 firebase.auth .... 
         // idToken comes from the client app
         try {
-            const decodedToken = await firebase.auth().verifyIdToken(token);   
+            var decodedToken = await firebase.auth().verifyIdToken(token);   
             console.log(decodedToken.uid);
             req.uid = decodedToken.uid        
                 // const user = await service.getUser(uid) // firebase uid를 가진 유저가 우리 db에 있는거 가져오기

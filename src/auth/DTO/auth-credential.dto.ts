@@ -8,7 +8,7 @@ export class AuthCredentialsDto {
 
     Email: string;
 
-    studentNumber: number;
+    studentNumber: string;
 
 }
 

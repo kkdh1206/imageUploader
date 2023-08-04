@@ -16,7 +16,7 @@ export class User extends BaseEntity{
     username: string;    // 처음에 username 도 설정 받아와야함 플러터에서
 
     @Column()
-    studentNumber: number;
+    studentNumber: string;
 
     @Column()
     imageUrl: string;
@@ -26,6 +26,9 @@ export class User extends BaseEntity{
 
     @Column()
     userstatus: UserStatus;
+
+    @Column('simple-array')
+    interestedId : Array<number>  
 
     @OneToMany(type => Item, item => item.user, {eager:true})
     items: Item[]

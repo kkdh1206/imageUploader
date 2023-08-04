@@ -16,7 +16,7 @@ export class UserRepository extends Repository<User> {
             Email : Email,
             uid: uid, 
             userstatus : UserStatus.NORMAL,
-            studentNumber: studentNumber,
+            studentNumber,
             imageUrl: 'https://i.ibb.co/1KFG5BG/no-image01.gif'
         }); // password를 저장할때 hash처리된 놈을 보안을 위해 저장
         console.log(user);
