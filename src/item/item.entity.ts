@@ -1,5 +1,5 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { ItemType, ItemStatus } from "./item-status.enum";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { ItemType, ItemStatus, ItemQuality } from "./item-status.enum";
 import { ItemImage } from "./item.Image";
 import { User } from "src/auth/user.entity";
 
@@ -29,13 +29,14 @@ export class Item extends BaseEntity{
     @Column()
     category: ItemType;
 
-    // @Column()
-    // itemQuality: string; // 처리해주기
+    @Column()
+    quality: ItemQuality; 
 
     @Column('simple-array')
     ImageUrls: Array<string>; // string으로 해야하지 itemImage 는 함수로 써야지 데이터타입이 될 수 가 없다.
 
     @ManyToOne(type => User, user=> user.items, {eager: false})
+    @JoinColumn({name: 'userId'})
     user: User  // 내가 올린 물건 구현 완료
 
     // 이거 나중에 로그인 구현된거랑 합치면 유저별로 item과 이어주어서 내가 올린물건찾는기능 & 특정유저 올린물건 찾는기능 구현하기

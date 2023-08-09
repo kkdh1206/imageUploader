@@ -25,6 +25,9 @@ export class User extends BaseEntity{
     uid: string;
 
     @Column()
+    online: boolean;
+
+    @Column()
     userstatus: UserStatus;
 
     @Column('simple-array')

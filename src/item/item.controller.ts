@@ -22,24 +22,35 @@ export class ItemsController {
         ){}
 
     
-    @Get() 
-    getAllItem(): Promise<Item[]> {
-        return this.itemsService.getAllItems(); // fltter 에 json 형태로 데이터 가면 변환해줘야함
+    @Get() // - 페이지 네이션 된놈
+    getAllItem(@Query() searchItemDto: SearchItemDto, @Query('page') page:number, @Query('pageSize') pageSize: number = 10 ): Promise<Item[]|boolean> {
+        return this.itemsService.getAllItems(searchItemDto, page, pageSize); // fltter 에 json 형태로 데이터 가면 변환해줘야함
     }
 
-    // Get(':id)
+    // @Get('/itemCount')
+    // getItemCount():Promise<number>{
+    //     return
+    // }
+
+    // @Get() 
+    // getAllItem(@Query() searchItemDto: SearchItemDto): Promise<Item[]> {
+    //     return this.itemsService.getAll(searchItemDto); 
+    // }
 
     // @Get('search')  -> /search?title="Dsdsdd%34%dsd&category=dddd&status page==20"
     // @Query('title') title;   
     
     @Get('search') // like 함수로 검색 쿼리 만들어주기
-    searchItem(@Query() searchItemDto: SearchItemDto):Promise<Item[]>{  //--> 쿼리 설정 이거 어디서 받아오는지 알아보기
-        return this.itemsService.getSearchedItem(searchItemDto);
+    searchItem(@Query() searchItemDto: SearchItemDto, @Query('page') page:number, @Query('pageSize') pageSize: number = 10):Promise<Item[]|boolean>{  //--> 쿼리 설정 이거 어디서 받아오는지 알아보기
+        return this.itemsService.getSearchedItem(searchItemDto, page, pageSize);
     }
 
     @Get('/:id')  // id 는 플러터에 있을듯 이걸로 호출해도 되고 아니면 플러터에서 받은 값을 바탕으로 바로 처리해도 될듯 따라서 이건 쓸지 안쓸지는 선택!  
-    getItembyId(@Param('id') id: number) : Promise<Item> { 
-        return this.itemsService.getItemById(id);
+    async getItembyId(@Param('id') id: number) : Promise<User> { 
+        var item = await this.itemsService.getItemById(id);
+        item = await this.itemsService.getOwner(id);
+        console.log(item.user);
+        return item.user;
     }
 
     // @Get('title/:title')  // id 별로 들어갈수 있게 해서 결론적으로 카테고리에서 검색해서 들어가든지 아니면 전체 아이템중에 찾아서 들어가든지 들어가면 items/:id 로 Get 하여 접근하게 만듬 
@@ -58,18 +69,18 @@ export class ItemsController {
     patchItemStatus(
         // @Req() req,  -> 해주는게 좋지만 애초에 기능을 내아이템에서 수정 가능하게 만들거니까 필요없을듯?
         @Param('id') id:number,
-        @Body('status', ItemStateValidationPipe) status:ItemStatus
+        @Body('status', ItemStateValidationPipe) status:string
     ): Promise<Item>{
         return this.itemsService.patchItemStatus(id, status);
     }
 
 
-    @Get('category/:category') // 카테고리별 검색   ----> 더 좋은 방법 강구하기 너무 이 방법은 좀 별로인듯;;
-    getItemdByCategory(
-        @Param('category') category: ItemType
-    ): Promise<Item[]> {
-        return this.itemsService.getItemByCategory(category); 
-    }
+    // @Get('category/:category') // 카테고리별 검색   ----> 더 좋은 방법 강구하기 너무 이 방법은 좀 별로인듯;;
+    // getItemdByCategory(
+    //     @Param('category') category: string
+    // ): Promise<Item[]> {
+    //     return this.itemsService.getItemByCategory(category); 
+    // }
 
     // @Get('/:category/:status') // status 검색설정 -- TRADING 이면 TRADING 찾고 SOLDOUT이면 SOLDOUT 찾는 함수
     // getItemByStatus( // 차선책 찾아볼 것!!!
@@ -88,9 +99,10 @@ export class ItemsController {
     async uploadImage( // 바로 핸들러 밑에 함수에 인터셉트 파일을 전달해줌
         @UploadedFiles() image: Array<Express.Multer.File>, // 파일을 받는놈
         @Body() createItemDto : CreateItemDto, // dto 받는놈
+        @Req() req
 
     ):Promise<Item>{// 이미지 주소도 가져오기
-        // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.');
+        // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\.');
     console.log(image);
     console.log(createItemDto); // 이까지 왓는지 확인용
     const imgList = [];
@@ -103,10 +115,10 @@ export class ItemsController {
     // const imageUrl4:string|null = await this.itemImage.uploadImage(image[3]);
     // const imageUrl5:string|null = await this.itemImage.uploadImage(image[4]);
     // const imageUrl:string[] = [imageUrl1.display_url, imageUrl2.display_url, imageUrl3.display_url] 
-    return this.itemsService.createItem(createItemDto, imgList); // 이미지 데이터중 필요한 주소를 고름
+    return this.itemsService.createItem(createItemDto, imgList, req.user); // 이미지 데이터중 필요한 주소를 고름
 }
 
-    @Patch('/myItems/patch/item/:id') // 아이템 수정하는 기능
+    @Patch('/myItems/patch/item/:id') // 아이템 수정하는 기능  -> status랑 category string처리해서 반영 잘해주기!!!!!
     // @UsePipes(ValidationPipe)
     @UseInterceptors(FilesInterceptor('image')) // 여기서 파일을 가져옴  ('image' == postman 에서 키랑 같다)키를 가진놈을 인터셉트하는것
     async updateItem(

@@ -4,6 +4,7 @@ import { DataSource } from "typeorm";
 import { TYPEORM_EX_CUSTOM_REPOSITORY } from "./typeorm-ex.decorator";
 
 export class TypeOrmExModule {
+    
     public static forCustomRepository<T extends new (...args: any[]) => any>(repositories: T[]): DynamicModule{
         const providers: Provider[] = []; 
 
@@ -16,14 +17,15 @@ export class TypeOrmExModule {
         providers.push ({
             inject: [getDataSourceToken()], 
             provide: repository,
-            useFactory: (dataSource :DataSource): typeof repository => { 
+            useFactory: (dataSource: DataSource): T => {  // <--- 수정된 부분
                 const baseRepository = dataSource.getRepository<any>(entity);
-                return new repository(baseRepository.target, baseRepository.manager, baseRepository.queryRunner);
-              },    
-            
+                return new repository(
+                    baseRepository.target, 
+                    baseRepository.manager, 
+                    baseRepository.queryRunner
+                );
+            },    
         });
-    
-    
     }
 
     return {
@@ -31,5 +33,5 @@ export class TypeOrmExModule {
         module: TypeOrmExModule,
         providers,
     };
-    }
+}
 }

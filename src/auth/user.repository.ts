@@ -16,10 +16,13 @@ export class UserRepository extends Repository<User> {
             Email : Email,
             uid: uid, 
             userstatus : UserStatus.NORMAL,
-            studentNumber,
-            imageUrl: 'https://i.ibb.co/1KFG5BG/no-image01.gif'
+            studentNumber : studentNumber,
+            imageUrl: 'https://i.ibb.co/1KFG5BG/no-image01.gif',
+            interestedId: []
         }); // password를 저장할때 hash처리된 놈을 보안을 위해 저장
+        console.log(`current =================== ${user}`);
         console.log(user);
+
         try{ // user Entity에 저장하는 코드
             await this.save(user); // 저장이 될때 오류를 try catch 구문이 잡아줌 - 이를 하지 않으면 Controller 레벨로 가서 오류 internel error 500 오류가 뜬다
             // console.log('데이터베이스에 저장됨');

@@ -3,25 +3,43 @@ import { ItemRepository } from './item.repository';
 import { Item } from './item.entity';
 import { CreateItemDto } from './DTO/create-item.dto';
 import { ItemImage } from './item.Image';
-import { ItemType, ItemStatus, SortType } from './item-status.enum';
+import { ItemType, ItemStatus } from './item-status.enum';
 import { User } from 'src/auth/user.entity';
 import { Like } from 'typeorm';
 import { SearchItemDto } from './DTO/search-item.dto';
 import { UserRepository } from 'src/auth/user.repository';
+import { ItemPaginationService } from './pagination.service';
+import { enumConvert } from './enum-convert';
 
 @Injectable()
 export class ItemsService {
     constructor(
         private itemRepository: ItemRepository,
-        private userRepository: UserRepository
+        private userRepository: UserRepository,
+        private itemPaginationService: ItemPaginationService,
+        private convert: enumConvert
      ) {}
 
-     async getAllItems (): Promise<Item[]> {
-        return this.itemRepository.find();
+     async getAllItems (searchItemDto:SearchItemDto, page:number, pageSize:number): Promise<Item[]|boolean> {
+        const {title, sort} = searchItemDto;
+        const items = await this.itemRepository.find();
+        return this.itemRepository.searchItem(items,sort, page, pageSize ) // page랑 pageSize 끌고와주기
+        
+
+        // return this.itemPaginationService.getPaginatedItems(page, pageSize, items)  
+        
+        // --> 나중에 적용할때 getAll 함수처럼 itemRepository 처리해주고 나온 Item[]을 페이지네이션으로 이동!!!!  --> sort 먼저하고 10개씩 잘라줘야함
+
      }
 
-    createItem(createItemDto: CreateItemDto, images: Array<string>): Promise<Item>{
-        return this.itemRepository.createItem(createItemDto,images)
+    //  async getAll (searchItemDto:SearchItemDto): Promise<Item[]> {
+    //     const{title, sort}=searchItemDto
+    //     const items = await this.itemRepository.find();
+    //     return this.itemRepository.searchItem(items,sort);
+    //  }
+
+    createItem(createItemDto: CreateItemDto, images: Array<string>, user:User): Promise<Item>{
+        return this.itemRepository.createItem(createItemDto,images,user)
     }
 
     // async getItemByTitle(title: string): Promise <Item[]> {
@@ -51,44 +69,23 @@ export class ItemsService {
         
     
 
-    async patchItemStatus(id:number, status:ItemStatus){
+    async patchItemStatus(id:number, status:string){
         const item = await this.getItemById(id);
-        item.status = status;
+        var realStatus:ItemStatus = this.convert.statusConvert(status)
+        
+        item.status = realStatus;
         await this.itemRepository.save(item);
 
         return item
     }
 
-    async getSearchedItem(searchItemDto:SearchItemDto): Promise<Item[]>{
+    async getSearchedItem(searchItemDto:SearchItemDto,page:number,pageSize:number): Promise<Item[]|boolean>{
         const { title,  sort } = searchItemDto;
-        // let sortObj;
-        
-        
-        // const items = await this.itemRepository.find({
-        //     where: {title : Like(`${title}`)}
-        // })
-        
-        
-        // if (!sort) {
-        //     sortBy가 비어있으면 분류를 안함
-        //   } else {
-        //     switch (sort) {
-        //       case SortType.PRICEDESCEND:
-        //         sortObj = { price: 'DESC' };
-        //         break;
-        //       case SortType.PRICEASCEND:
-        //         sortObj = { price: 'ASC' };
-        //         break;
-        //         case SortType.DATEDESCEND:
-        //         sortObj = { createdAt: 'DESC' };
-        //         break;
-        //       case SortType.DATEASCEND:
-        //         sortObj = { createdAt: 'ASC' };
-        //         break;
-        //     }
-        //   }
+        const items = await this.itemRepository.find({
+            where: {title : Like(`%${title}%`)}
+        })
           
-          return this.itemRepository.searchItem(title,sort);
+          return this.itemRepository.searchItem(items,sort,page,pageSize);
         }
         
         // const total = await this.itemRepository.count(); // 총 상품 몇개인지 알려주는데 사용하면 좋을듯
@@ -116,24 +113,53 @@ export class ItemsService {
         return items; // Query Builder를 사용 -- repository api 메소드로 대부분 대체 가능하지만 복잡한건 query builder 사용해야한다
     }
 
-
-
-    async getItemByCategory (category: ItemType): Promise<Item[]> { // 카테고리 별로 찾는것
-        const item = await this.itemRepository.find({where:{status: ItemStatus.TRADING|| ItemStatus.FASTSELL}&&{category: category}}); // 팔려나간건 안보여줌
-        // const item = await this.itemRepository.findBy({category}); // where 은 어디서 찾는지인듯 여기서는 : FindoptionsWhere<Item> 즉, entity에서 찾는다
-        // findOneby로 하면 하나만 찾아와서 안된다
-        // const found = await this.itemRepository.findOneBy({category});
-        // console.log(found);
-        if (item == null) {
-            throw new NotFoundException(`Can't find Item with category ${category}`);
-        }
+    async getOwner(itemId:number):Promise<Item | undefined>{
+        const item = await this.itemRepository
+        .createQueryBuilder('item')
+        .leftJoinAndSelect('item.user', 'user')
+        .where('item.id = :itemId', {itemId})
+        .getOne();
         return item;
-     }
+    }
+
+
+
+    // async getItemByCategory (category: string): Promise<Item[]> { // 카테고리 별로 찾는것
+    //     var realCategory: ItemType;
+    //     if(category == 'BOOK'){
+    //         realCategory = ItemType.BOOK
+    //     }
+    //     if(category == 'CLOTHES'){
+    //         realCategory = ItemType.CLOTHES
+    //     }
+    //     if(category == 'REFRIGERATOR'){
+    //         realCategory = ItemType.REFRIGERATOR
+    //     }
+    //     if(category == 'MORNITER'){
+    //         realCategory = ItemType.MORNITER
+    //     }
+    //     if(category == 'ROOM'){
+    //         realCategory = ItemType.ROOM
+    //     }
+    //     if(category == 'ETC'){
+    //         realCategory = ItemType.ETC
+    //     }
+
+    //     const item = await this.itemRepository.find({where:{status: ItemStatus.TRADING|| ItemStatus.FASTSELL}&&{category: realCategory}}); // 팔려나간건 안보여줌
+    //     // const item = await this.itemRepository.findBy({category}); // where 은 어디서 찾는지인듯 여기서는 : FindoptionsWhere<Item> 즉, entity에서 찾는다
+    //     // findOneby로 하면 하나만 찾아와서 안된다
+    //     // const found = await this.itemRepository.findOneBy({category});
+    //     // console.log(found);
+    //     if (item == null) {
+    //         throw new NotFoundException(`Can't find Item with category ${category}`);
+    //     }
+    //     return item;
+    //  }
 
     async deleteInterested ( id: number, user:User ):Promise<User> {
         const currentUser = await this.userRepository.findOne({where:{uid: user.uid}})
-        currentUser.interestedId.filter((num) => num !== id)
-        this.userRepository.save(currentUser);
+        currentUser.interestedId = currentUser.interestedId.filter((num) => num !== id)
+        await this.userRepository.save(currentUser);
         return currentUser
     }
 

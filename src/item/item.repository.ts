@@ -2,20 +2,39 @@ import { CustomRepository } from "src/configs/typeorm-ex.decorator";
 import { Like, Repository } from "typeorm";
 import { Item } from "./item.entity";
 import { CreateItemDto } from "./DTO/create-item.dto";
-import { ItemType, ItemStatus, SortType } from "./item-status.enum";
+import { ItemType, ItemStatus, ItemQuality } from "./item-status.enum";
 import { ItemImage } from "./item.Image";
+import { ItemPaginationService } from "./pagination.service";
+import { enumConvert } from "./enum-convert";
 
 
 @CustomRepository(Item)
 export class ItemRepository extends Repository<Item> {
-    async createItem(createItemDto : CreateItemDto, images: Array<string>) : Promise<Item>{
-        const{title, description, category, price, status} = createItemDto;
+
+    private itemPaginationService : ItemPaginationService;
+    private convert: enumConvert;
+    
+    initializeDependencies(){
+        this.itemPaginationService = new ItemPaginationService();
+        this.convert = new enumConvert();
+    }    
+    
+    async createItem(createItemDto : CreateItemDto, images: Array<string>, user) : Promise<Item>{
+        this.initializeDependencies();
+        const{title, description, category, price, status, quality} = createItemDto;
+        // console.log('?!?!?!?!?!?!!?!??!?!?!?!!?!?!?!?!?!?!?!?!!?');
+        var realCategory: ItemType= this.convert.categoryConvert(category);
+        var realStatus: ItemStatus= this.convert.statusConvert(status);
+        var realQuality: ItemQuality = this.convert.qualityConvert(quality);
+        console.log(realCategory);
         const item = this.create({ // 객체생성
            title,
            description,
-           status, // status 선택가능하게 저
-           category,
+           status: realStatus, // status 선택가능하게 저
+           category: realCategory,
            price,
+           quality: realQuality,
+           user: user,
            ImageUrls: images // 배열로 저장하려지만 entity에서 배열이 저장 안되서
         }) // 사진여러개면 배열로 주소 저장
         
@@ -25,19 +44,18 @@ export class ItemRepository extends Repository<Item> {
 }
 
 
-    async searchItem(title:string,sort):Promise<Item[]>{
-        const items = await this.find({
-            where: {title : Like(`%${title}%`)}
-        })
+    async searchItem(items: Item[],sort:string, page:number, pageSize:number):Promise<Item[]|boolean>{
+        this.initializeDependencies();
+        console.log(sort);
 
-        if(sort==SortType.PRICEASCEND){
+        if(sort=='PRICEASCEND'){
             items.sort((a, b) => {
                 if (a.price < b.price) return -1;
                 if (a.price > b.price) return 1;
                 return 0;
           });
         }
-        if(sort==SortType.PRICEDESCEND){
+        else if(sort=='PRICEDESCEND'){
             items.sort((a, b) => {
                 if (a.price < b.price) return 1;
                 if (a.price > b.price) return -1;
@@ -45,7 +63,7 @@ export class ItemRepository extends Repository<Item> {
               });
         }
         
-        if(sort==SortType.DATEASCEND){
+        else if(sort=='DATEASCEND'){ // 최신순
             items.sort((a, b) => {
                 if (a.createdAt < b.createdAt) return 1;
                 if (a.createdAt > b.createdAt) return -1;
@@ -53,7 +71,7 @@ export class ItemRepository extends Repository<Item> {
               });
         }
 
-        if(sort==SortType.DATEDESCEND){
+        else if(sort=='DATEDESCEND'){  // 오래된순
             items.sort((a, b) => {
                 if (a.createdAt < b.createdAt) return -1;
                 if (a.createdAt > b.createdAt) return 1;
@@ -61,8 +79,25 @@ export class ItemRepository extends Repository<Item> {
               });
             }
 
+        // else{  // 최신순
+        //     items.sort((a, b) => {
+        //         if (a.createdAt < b.createdAt) return 1;
+        //         if (a.createdAt > b.createdAt) return -1;
+        //         return 0;
+        //       });
 
-        return items;
+              
+        // }
+
+        else{ console.log('sort error') }
+
+
+        // return items;
+        // pagenation으로 보내줘서 항상 가야함
+        // 아래코드임
+        var realItem
+        realItem = await items;
+        return this.itemPaginationService.getPaginatedItems(page,pageSize,items);
     }
 
 

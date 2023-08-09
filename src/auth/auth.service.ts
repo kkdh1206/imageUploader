@@ -29,6 +29,8 @@ export class AuthService {
             console.log(`current user ===== ${user}`);
             // 만약에라도 발생할 오류에} 대해 대비가 되면 좋을듯??
         }
+        user.online = true;
+        await this. userRepository.save(user);
         return user
     }
 
