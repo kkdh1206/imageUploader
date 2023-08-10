@@ -36,6 +36,9 @@ export class enumConvert{
         if(status == 'TRADING'){
             return ItemStatus.TRADING
         }
+        if(status == 'DELETED'){
+            return ItemStatus.DELETED
+        }
     }
 
     qualityConvert(quality: string){

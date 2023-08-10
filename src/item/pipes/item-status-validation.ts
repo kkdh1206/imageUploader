@@ -6,7 +6,9 @@ export class ItemStateValidationPipe implements PipeTransform{
     readonly StatusOptions =[
         ItemStatus.FASTSELL,
         ItemStatus.SOLDOUT,
-        ItemStatus.TRADING
+        ItemStatus.TRADING,
+        ItemStatus.RESERVED,
+        ItemStatus.DELETED,
     ]
 
     transform(value: any) {

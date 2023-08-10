@@ -21,8 +21,10 @@ export class ItemsService {
      ) {}
 
      async getAllItems (searchItemDto:SearchItemDto, page:number, pageSize:number): Promise<Item[]|boolean> {
-        const {title, sort} = searchItemDto;
-        const items = await this.itemRepository.find();
+        const {title, sort, status} = searchItemDto;
+        var realStatus = this.convert.statusConvert(status)
+        const items = await this.itemRepository.find({where: { status: realStatus} });
+
         return this.itemRepository.searchItem(items,sort, page, pageSize ) // page랑 pageSize 끌고와주기
         
 
@@ -80,12 +82,17 @@ export class ItemsService {
     }
 
     async getSearchedItem(searchItemDto:SearchItemDto,page:number,pageSize:number): Promise<Item[]|boolean>{
-        const { title,  sort } = searchItemDto;
+        const { title,  sort, status } = searchItemDto;
+        var realStatus = this.convert.statusConvert(status)
+        // console.log(title);
+
         const items = await this.itemRepository.find({
-            where: {title : Like(`%${title}%`)}
+            
+            where: {title : Like(`%${title}%`), //  동시 만족하는 놈만 잡아온다
+                    status: realStatus}         //  동시 만족하는 놈만 잡아온다
         })
-          
-          return this.itemRepository.searchItem(items,sort,page,pageSize);
+        //   console.log(items);
+          return this.itemRepository.searchItem(items, sort, page, pageSize);
         }
         
         // const total = await this.itemRepository.count(); // 총 상품 몇개인지 알려주는데 사용하면 좋을듯
@@ -103,14 +110,19 @@ export class ItemsService {
         return found;
     }
 
-    async getMyItems ( user: User ): Promise<Item[]>{ // 본인의 item만 가져오는 함수
+    async getMyItems ( user: User, searchItemDto, page, pageSize ): Promise<Item[]| boolean>{ // 본인의 item만 가져오는 함수
+        // console.log(user);
+        const{title, sort, status} = searchItemDto;
         const query = this.itemRepository.createQueryBuilder('item'); // query builder 생성 item table에 접근할것이라 'item'를 넣음
-        
+        // console.log('쿼리를 받았다');
         query.where('item.userId = :userId',{ userId: user.id }); // item가 가지고 있는 user id 와 컨트롤러에서 매개변수로 넣어준 현재의 user id 와 동일한놈만 골라줌
                                 // userId 컬럼에서 찾는거임 !!
+        query.andWhere('item.status != :status', { status: ItemStatus.DELETED })
 
         const items = await query.getMany(); // getMany는 위에서 나온 데이터를 전부다 가져올때 사용
-        return items; // Query Builder를 사용 -- repository api 메소드로 대부분 대체 가능하지만 복잡한건 query builder 사용해야한다
+        // console.log(items);
+        // Query Builder를 사용 -- repository api 메소드로 대부분 대체 가능하지만 복잡한건 query builder 사용해야한다
+        return this.itemRepository.searchItem(items, sort, page, pageSize )
     }
 
     async getOwner(itemId:number):Promise<Item | undefined>{

@@ -45,11 +45,11 @@ export class ItemsController {
         return this.itemsService.getSearchedItem(searchItemDto, page, pageSize);
     }
 
-    @Get('/:id')  // id 는 플러터에 있을듯 이걸로 호출해도 되고 아니면 플러터에서 받은 값을 바탕으로 바로 처리해도 될듯 따라서 이건 쓸지 안쓸지는 선택!  
+    @Get('itemId/:id')  // id 는 플러터에 있을듯 이걸로 호출해도 되고 아니면 플러터에서 받은 값을 바탕으로 바로 처리해도 될듯 따라서 이건 쓸지 안쓸지는 선택!  
     async getItembyId(@Param('id') id: number) : Promise<User> { 
         var item = await this.itemsService.getItemById(id);
         item = await this.itemsService.getOwner(id);
-        console.log(item.user);
+        // console.log(item.user);
         return item.user;
     }
 
@@ -58,11 +58,14 @@ export class ItemsController {
     //     return this.itemsService.getItemByTitle(title);
     // }
 
-    @Get('/myItems') 
+    @Get('myItems') 
     getMyItems(
-        @Req() req // service 에서 getMyItems 가 작동하도록 매개변수 넣어줌
-    ): Promise<Item[]> {
-        return this.itemsService.getMyItems(req.user); // 내가만든 가드에서 req.user 값을 가지고 있음
+        @Req() req, // service 에서 getMyItems 가 작동하도록 매개변수 넣어줌
+        @Query() searchItemDto: SearchItemDto, @Query('queryPage') page:number, @Query('pageSize') pageSize: number = 10 
+    ): Promise<Item[]| boolean> {
+        console.log('요청요청요청요청!!!!!!')
+        // console.log('현재 오긴함 !!!!!!');
+        return this.itemsService.getMyItems(req.user,searchItemDto,page,pageSize ); // 내가만든 가드에서 req.user 값을 가지고 있음
     }
 
     @Patch('myItems/patch/status/:id')
