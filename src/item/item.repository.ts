@@ -45,8 +45,9 @@ export class ItemRepository extends Repository<Item> {
 
 
     async searchItem(items: Item[],sort:string, page:number, pageSize:number):Promise<Item[]|boolean>{
+        // console.log(items);
         this.initializeDependencies();
-        console.log(sort);
+        // console.log(sort);
 
         if(sort=='PRICEASCEND'){
             items.sort((a, b) => {
@@ -65,16 +66,16 @@ export class ItemRepository extends Repository<Item> {
         
         else if(sort=='DATEASCEND'){ // 최신순
             items.sort((a, b) => {
-                if (a.createdAt < b.createdAt) return 1;
-                if (a.createdAt > b.createdAt) return -1;
+                if (a.updatedAt < b.updatedAt) return 1;
+                if (a.updatedAt > b.updatedAt) return -1;
                 return 0;
               });
         }
 
         else if(sort=='DATEDESCEND'){  // 오래된순
             items.sort((a, b) => {
-                if (a.createdAt < b.createdAt) return -1;
-                if (a.createdAt > b.createdAt) return 1;
+                if (a.updatedAt < b.updatedAt) return -1;
+                if (a.updatedAt > b.updatedAt) return 1;
                 return 0;
               });
             }
@@ -95,9 +96,8 @@ export class ItemRepository extends Repository<Item> {
         // return items;
         // pagenation으로 보내줘서 항상 가야함
         // 아래코드임
-        var realItem
-        realItem = await items;
-        return this.itemPaginationService.getPaginatedItems(page,pageSize,items);
+        let realItem = await items;
+        return this.itemPaginationService.getPaginatedItems(page,pageSize,realItem);
     }
 
 

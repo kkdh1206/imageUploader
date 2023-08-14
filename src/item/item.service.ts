@@ -5,11 +5,12 @@ import { CreateItemDto } from './DTO/create-item.dto';
 import { ItemImage } from './item.Image';
 import { ItemType, ItemStatus } from './item-status.enum';
 import { User } from 'src/auth/user.entity';
-import { Like } from 'typeorm';
+import { In, Like, Not } from 'typeorm';
 import { SearchItemDto } from './DTO/search-item.dto';
 import { UserRepository } from 'src/auth/user.repository';
 import { ItemPaginationService } from './pagination.service';
 import { enumConvert } from './enum-convert';
+import { stat } from 'fs';
 
 @Injectable()
 export class ItemsService {
@@ -77,7 +78,7 @@ export class ItemsService {
         
         item.status = realStatus;
         await this.itemRepository.save(item);
-
+        console.log(item);
         return item
     }
 
@@ -136,37 +137,22 @@ export class ItemsService {
 
 
 
-    // async getItemByCategory (category: string): Promise<Item[]> { // 카테고리 별로 찾는것
-    //     var realCategory: ItemType;
-    //     if(category == 'BOOK'){
-    //         realCategory = ItemType.BOOK
-    //     }
-    //     if(category == 'CLOTHES'){
-    //         realCategory = ItemType.CLOTHES
-    //     }
-    //     if(category == 'REFRIGERATOR'){
-    //         realCategory = ItemType.REFRIGERATOR
-    //     }
-    //     if(category == 'MORNITER'){
-    //         realCategory = ItemType.MORNITER
-    //     }
-    //     if(category == 'ROOM'){
-    //         realCategory = ItemType.ROOM
-    //     }
-    //     if(category == 'ETC'){
-    //         realCategory = ItemType.ETC
-    //     }
-
-    //     const item = await this.itemRepository.find({where:{status: ItemStatus.TRADING|| ItemStatus.FASTSELL}&&{category: realCategory}}); // 팔려나간건 안보여줌
-    //     // const item = await this.itemRepository.findBy({category}); // where 은 어디서 찾는지인듯 여기서는 : FindoptionsWhere<Item> 즉, entity에서 찾는다
-    //     // findOneby로 하면 하나만 찾아와서 안된다
-    //     // const found = await this.itemRepository.findOneBy({category});
-    //     // console.log(found);
-    //     if (item == null) {
-    //         throw new NotFoundException(`Can't find Item with category ${category}`);
-    //     }
-    //     return item;
-    //  }
+    async getItemByCategory (category: string, searchItemDto:SearchItemDto, page:number, pageSize:number): Promise<Item[]|boolean> { // 카테고리 별로 찾는것
+        const {title, sort, status} = searchItemDto;
+        var realCategory = this.convert.categoryConvert(category);
+        let realStatus = this.convert.statusConvert(status);
+        console.log(status);
+        const item = await this.itemRepository.find({where:{ status:realStatus,category: realCategory}}); // 팔려나간건 안보여줌
+        // const item = await this.itemRepository.findBy({category}); // where 은 어디서 찾는지인듯 여기서는 : FindoptionsWhere<Item> 즉, entity에서 찾는다
+        // findOneby로 하면 하나만 찾아와서 안된다
+        // const found = await this.itemRepository.findOneBy({category});
+        // console.log(found);
+        if (item == null) {
+            throw new NotFoundException(`Can't find Item with category ${category}`);
+        }
+        console.log(item);
+        return this.itemRepository.searchItem(item, sort, page, pageSize);
+     }
 
     async deleteInterested ( id: number, user:User ):Promise<User> {
         const currentUser = await this.userRepository.findOne({where:{uid: user.uid}})
@@ -182,10 +168,27 @@ export class ItemsService {
         return currentUser
     }
 
-    async getInterested (user:User):Promise<Array<number>> {
+    async getInterested (user:User, searchItemDto:SearchItemDto, page:number, pageSize:number):Promise<Item[]|boolean> {
         const currentUser = await this.userRepository.findOne({where:{uid: user.uid}})
-        return currentUser.interestedId;
+        const { title,  sort, status } = searchItemDto; 
+        let interestedArray = currentUser.interestedId;
+        let items =[];
+        for(let i=0; i<interestedArray.length; i++){
+            let id = interestedArray[i]
+            let item = await this.itemRepository.findOne({where:{id:id, status: Not(In([ItemStatus.DELETED, ItemStatus.USERFASTSELL]))}})
+            if(item != null){ 
+                items.push(item)
+                }
+            else{} // 아무것도 안찾아져서 null이면 item Array에 추가하지 않는다.
+            console.log(id);
+            console.log(item);
+            console.log(items);
+        }
+        
+        return this.itemRepository.searchItem(items, sort, page, pageSize);
     }
+
+    // const는 재할당 불가 var, let은 가능 하지만 let이 더 나중에 나와서 좋다고 한다.
 
 
     //  async getItemByStatus (category: ItemCategory,status: ItemStatus): Promise<Item[]> { // status 찾는것

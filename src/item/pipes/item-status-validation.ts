@@ -4,7 +4,8 @@ import { ItemStatus } from "../item-status.enum";
 
 export class ItemStateValidationPipe implements PipeTransform{
     readonly StatusOptions =[
-        ItemStatus.FASTSELL,
+        ItemStatus.USERFASTSELL,
+        ItemStatus.SUPOFASTSELL,
         ItemStatus.SOLDOUT,
         ItemStatus.TRADING,
         ItemStatus.RESERVED,

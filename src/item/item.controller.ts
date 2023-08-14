@@ -11,7 +11,7 @@ import { User } from "src/auth/user.entity";
 import { AuthService } from "src/auth/auth.service";
 import { SearchItemDto } from "./DTO/search-item.dto";
 
-
+// 플러터 dio 요청시 formData 는 사진 포함할때, json은 사진이 없을때 사용하면 된다.
 
 @Controller('items') // 판매완료된 상품은 보이지 않게 하기
 // 잠시꺼놓은것 테스트후 복구할 것 
@@ -61,7 +61,7 @@ export class ItemsController {
     @Get('myItems') 
     getMyItems(
         @Req() req, // service 에서 getMyItems 가 작동하도록 매개변수 넣어줌
-        @Query() searchItemDto: SearchItemDto, @Query('queryPage') page:number, @Query('pageSize') pageSize: number = 10 
+        @Query() searchItemDto: SearchItemDto, @Query('page') page:number, @Query('pageSize') pageSize: number = 10 
     ): Promise<Item[]| boolean> {
         console.log('요청요청요청요청!!!!!!')
         // console.log('현재 오긴함 !!!!!!');
@@ -72,18 +72,21 @@ export class ItemsController {
     patchItemStatus(
         // @Req() req,  -> 해주는게 좋지만 애초에 기능을 내아이템에서 수정 가능하게 만들거니까 필요없을듯?
         @Param('id') id:number,
-        @Body('status', ItemStateValidationPipe) status:string
+        @Body('status') status:string
     ): Promise<Item>{
+        console.log(status);
         return this.itemsService.patchItemStatus(id, status);
     }
 
 
-    // @Get('category/:category') // 카테고리별 검색   ----> 더 좋은 방법 강구하기 너무 이 방법은 좀 별로인듯;;
-    // getItemdByCategory(
-    //     @Param('category') category: string
-    // ): Promise<Item[]> {
-    //     return this.itemsService.getItemByCategory(category); 
-    // }
+    @Get('category') // 카테고리별 검색   ----> 더 좋은 방법 강구하기 너무 이 방법은 좀 별로인듯;;
+    getItemdByCategory(
+        @Body('category') category: string,
+        @Query() searchItemDto: SearchItemDto, @Query('page') page:number, @Query('pageSize') pageSize: number = 10
+    ): Promise<Item[]| boolean> {
+        console.log(page);
+        return this.itemsService.getItemByCategory(category, searchItemDto, page, pageSize); 
+    }
 
     // @Get('/:category/:status') // status 검색설정 -- TRADING 이면 TRADING 찾고 SOLDOUT이면 SOLDOUT 찾는 함수
     // getItemByStatus( // 차선책 찾아볼 것!!!
@@ -122,7 +125,7 @@ export class ItemsController {
 }
 
     @Patch('/myItems/patch/item/:id') // 아이템 수정하는 기능  -> status랑 category string처리해서 반영 잘해주기!!!!!
-    // @UsePipes(ValidationPipe)
+    @UsePipes(ValidationPipe)
     @UseInterceptors(FilesInterceptor('image')) // 여기서 파일을 가져옴  ('image' == postman 에서 키랑 같다)키를 가진놈을 인터셉트하는것
     async updateItem(
         @UploadedFiles() image: Array<Express.Multer.File>,
@@ -160,9 +163,10 @@ export class ItemsController {
 
     @Get('/myInterestedItem')
     async getInterested(
-        @Req() req
-    ): Promise <Array<number>>{
-        return this.itemsService.getInterested(req.user);
+        @Req() req,
+        @Query() searchItemDto: SearchItemDto, @Query('page') page:number, @Query('pageSize') pageSize: number = 10 
+    ): Promise <Item[]|boolean>{
+        return this.itemsService.getInterested(req.user, searchItemDto, page, pageSize);
     }
 
 

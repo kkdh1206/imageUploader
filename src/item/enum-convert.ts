@@ -12,7 +12,7 @@ export class enumConvert{
             return ItemType.REFRIGERATOR
         }
         if(category == 'MORNITER'){
-            return ItemType.MORNITER
+            return ItemType.MORNITOR
         }
         if(category == 'ROOM'){
             return ItemType.ROOM
@@ -27,8 +27,11 @@ export class enumConvert{
         if(status == 'RESERVED'){
             return ItemStatus.RESERVED
         }
-        if(status == 'FASTSELL'){
-            return ItemStatus.FASTSELL
+        if(status == 'USERFASTSELL'){ // 유저가 올림
+            return ItemStatus.USERFASTSELL
+        }
+        if(status == 'SUPOFASTSELL'){ // 우리가 올림
+            return ItemStatus.SUPOFASTSELL
         }
         if(status == 'SOLDOUT'){
             return ItemStatus.SOLDOUT
