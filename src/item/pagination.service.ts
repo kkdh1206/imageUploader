@@ -6,6 +6,9 @@ import { Item } from './item.entity';
 export class ItemPaginationService { // 페이지네이션을 작동하는 구문이다.
 
   async getPaginatedItems(page: number, pageSize: number, items: Item[]): Promise<Item[]|boolean> { 
+    
+    console.log(`item count =====${items.length}`)
+    
     var itemCount = items.length
     console.log(page, pageSize);
     const startIndex = (page - 1) * pageSize;

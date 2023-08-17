@@ -88,6 +88,13 @@ export class ItemsController {
         return this.itemsService.getItemByCategory(category, searchItemDto, page, pageSize); 
     }
 
+    @Get('fastSell')
+    getFastSellItem(
+        @Query() searchItemDto: SearchItemDto, @Query('page') page:number, @Query('pageSize') pageSize: number = 10
+    ): Promise<Item[]|boolean>{
+        return this.itemsService.getFastSellItem(searchItemDto, page, pageSize)
+    }
+
     // @Get('/:category/:status') // status 검색설정 -- TRADING 이면 TRADING 찾고 SOLDOUT이면 SOLDOUT 찾는 함수
     // getItemByStatus( // 차선책 찾아볼 것!!!
     // @Param('category') category: ItemCategory,
@@ -139,6 +146,15 @@ export class ItemsController {
 
             return this.itemsService.updateItem(id,  createItemDto, imgList)
         }
+
+    @Patch('/myItems/patch/image/:id')
+    deleteImage(
+        @Param('id',ParseIntPipe) id, 
+        @Body() image       // 이건 받아올때 string이 아니라 json으로 온다. 근데 보통 dto에서 받으면 json 처리가 되버리지만 이렇게 받을거면 여기서 json을 파싱하든 아니면 보낼때 json이 아닌 string으로 보내줘야 한다.
+    ): Promise<void>{
+        console.log(image);
+        return this.itemsService.deleteImage(id, image);
+    }
 
        
         

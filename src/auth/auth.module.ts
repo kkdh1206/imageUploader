@@ -18,6 +18,6 @@ import { HttpModule } from '@nestjs/axios';
     ],
     controllers: [AuthController],
     providers: [AuthService, JwtAuthGuard, JwtService, JwtAuthGuard2, UserImage],// 현재 JwtStragety를 Auth 모듈에서 사용하게위해 넣음
-    exports:[JwtAuthGuard, AuthService] // 이건 다른 모듈에서 사용하기위해 넣어줌
+    exports:[JwtAuthGuard, AuthService] // 이건 다른 모듈에서 사용하기위해 넣어줌    따라서 JwtAuthGuard2 는 다른곳에서 못씀
   })
 export class AuthModule {}

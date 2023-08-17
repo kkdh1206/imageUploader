@@ -57,14 +57,17 @@ export class ItemsService {
     async updateItem(id:number, createItemDto:CreateItemDto, images: Array<string>):Promise<Item>{
         const item = await this.getItemById(id);
         const {title, description,  price} = createItemDto;
+        const patchImage = item.ImageUrls.concat(images) // 두 배열 합침
         item.title = title,
         item.description = description,
         // item.category = category,
         item.price = price,
+        item.ImageUrls = patchImage
         // item.status = status,
-        item.ImageUrls = images,
+        
             
         await this.itemRepository.save(item); // 데이터베이스에 저장하는 save메소드사용 -- 이게 entity 에 이름 맞는곳에 알아서 저장해주는듯
+        console.log( '반환 이상 무')
         return item; // service로 갈값
         }
         
@@ -188,6 +191,12 @@ export class ItemsService {
         return this.itemRepository.searchItem(items, sort, page, pageSize);
     }
 
+    async getFastSellItem(searchItemDto:SearchItemDto, page:number, pageSize:number): Promise<Item[]|boolean> {
+        const {title, sort, status} = searchItemDto;
+        const item = await this.itemRepository.find({where:{ status:ItemStatus.USERFASTSELL}});
+        return this.itemRepository.searchItem(item, sort, page, pageSize);
+    }
+
     // const는 재할당 불가 var, let은 가능 하지만 let이 더 나중에 나와서 좋다고 한다.
 
 
@@ -209,6 +218,14 @@ export class ItemsService {
 
      async deleteItem(id:number) : Promise<void> {
         const result = await this.itemRepository.delete({id});
+     }
+
+     async deleteImage(id:number, imageUrl) : Promise<void> {
+        console.log(imageUrl);
+        const item = await this.itemRepository.findOne({where:{ id: id}});
+        item.ImageUrls = item.ImageUrls.filter((imageObj) => imageObj !== imageUrl.image);
+        await this.itemRepository.save(item);
+        console.log(item.ImageUrls);
      }
    
 }

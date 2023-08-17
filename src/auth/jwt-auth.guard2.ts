@@ -8,7 +8,7 @@ import * as firebase from 'firebase-admin';
 import { Any } from "typeorm";
 
 @Injectable()
-export class JwtAuthGuard2 implements CanActivate {
+export class JwtAuthGuard2 implements CanActivate { // 회원가입 전용 왜냐면 JwtAuthGaurd 에는 signIn 함수 써서 user 찾거든
     constructor() {}
     async canActivate(context: ExecutionContext): Promise<boolean> {
         var req = context.switchToHttp().getRequest();

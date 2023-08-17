@@ -1,6 +1,7 @@
 import { Item } from "src/item/item.entity";
 import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
 import { UserStatus } from "./user-status.enum";
+import { Board } from "src/boards/boards.entity";
 
 @Entity()
 @Unique(['Email']) // 같은 username 혹은 Email 사용하면 오류 뜨게됨   --> 이 방법 말고도 findOne 함수로 entity에 존재하는지 확인해서 에러주는 방법도 있다.
@@ -35,4 +36,7 @@ export class User extends BaseEntity{
 
     @OneToMany(type => Item, item => item.user, {eager:true})
     items: Item[]
+
+    @OneToMany(type => Board, board => board.user, {eager: true})
+    boards: Board[]
 }

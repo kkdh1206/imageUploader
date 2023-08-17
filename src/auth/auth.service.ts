@@ -17,6 +17,25 @@ export class AuthService {
         private userImage : UserImage
     ){}// 여기가 body부분이라는데 무슨기능일까??
 
+    async getAllUser(): Promise<User[]>{
+        const users = await this.userRepository.find();
+        let needList =[];
+        for(let i=0; i<users.length; i++){
+            let needs = {
+                'username' : users[i].username, 
+                'Email' : users[i].Email,
+                'status' : users[i].userstatus,
+                'online' : users[i].online
+            }
+                needList.push(needs);   
+            }
+
+
+        console.log(users);
+        return needList
+    }
+
+
     async signUp(authCredentialDto,uid) : Promise<void>{ //signUp 메소드 제작
         //console.log('컨트롤러는 통과');
         return this.userRepository.createUser(authCredentialDto,uid); // 값 아무것도 없는데 왜 return 해줘야할까?? --> 그니까 null값이고 promise도 void로 잡았지
@@ -58,11 +77,19 @@ export class AuthService {
     }
 
 
-    async patchUserInformation(image, uid, username){
+    async patchUserInformationImage(imageUrl, uid){
         const user = await this.userRepository.findOne({where: {uid :uid}})
-        user.username = username;
-        const imageUrl:string|null = await this.userImage.uploadImage(image);
         user.imageUrl = imageUrl;
+        await this.userRepository.save(user);
+        return user
+    }
+
+    async patchUserInformationUsername(uid, username){
+        const user = await this.userRepository.findOne({where: {uid :uid}})
+        console.log(username);
+        console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!111');
+        user.username = username;
+        console.log(user.username);
         await this.userRepository.save(user);
         return user
     }

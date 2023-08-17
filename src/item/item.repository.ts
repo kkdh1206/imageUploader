@@ -45,9 +45,9 @@ export class ItemRepository extends Repository<Item> {
 
 
     async searchItem(items: Item[],sort:string, page:number, pageSize:number):Promise<Item[]|boolean>{
-        // console.log(items);
+        console.log(items);
         this.initializeDependencies();
-        // console.log(sort);
+        console.log(sort);
 
         if(sort=='PRICEASCEND'){
             items.sort((a, b) => {

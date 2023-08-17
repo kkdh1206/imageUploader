@@ -16,6 +16,7 @@ export class UserImage {
 
 
   async uploadImage(image: Express.Multer.File) {
+    console.log('여기 들어왔음')
     const apiConfig = config.get('api');
     const url = apiConfig.imgbb;
 
@@ -31,6 +32,7 @@ export class UserImage {
         }),
       ),
     );
+    // console.log(data.display_url);
     return data.display_url;
   }
 }

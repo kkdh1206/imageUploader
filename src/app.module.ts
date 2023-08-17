@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MulterModule } from '@nestjs/platform-express';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
+import { BoardsModule } from './boards/boards.module';
 
 
 @Module({
@@ -14,6 +15,8 @@ import { AuthModule } from './auth/auth.module';
     TypeOrmModule.forRoot(typeORMConfig),
     ConfigModule.forRoot({isGlobal : true}),
     AuthModule,
+    BoardsModule,
+
   ]
 
 })
