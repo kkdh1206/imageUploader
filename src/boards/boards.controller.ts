@@ -4,6 +4,7 @@ import { Board } from './boards.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CreateBoardmDto } from './DTO/create-board.dto';
 import { User } from 'src/auth/user.entity';
+import { Comment } from 'src/comment/comment.entity';
 
 @Controller('boards')
 @UseGuards(JwtAuthGuard)
@@ -18,9 +19,24 @@ export class BoardsController {
     }
 
     @Get('search') // like 함수로 검색 쿼리 만들어주기
-    searchItem(@Query() title, @Query('page') page:number, @Query('pageSize') pageSize: number = 7):Promise<Board[]|boolean>{  //--> 쿼리 설정 이거 어디서 받아오는지 알아보기
-        let realtitle = title.title;
-        return this.boardsService.getSearchedBoard(realtitle, page, pageSize);
+    async searchItem(@Query('title') title, @Query('page') page:number, @Query('pageSize') pageSize: number = 7):Promise<Board[]|boolean>{  //--> 쿼리 설정 이거 어디서 받아오는지 알아보기
+        console.log(`title ============${title}`);
+        if(title != ""){
+        return this.boardsService.getSearchedBoard(title, page, pageSize);
+        }
+        else{
+            return true; // async 안하면 오류뜬다
+        }
+    }
+
+    @Get('search/count')
+    countSearchBoards(@Query('title') title):Promise<number>{
+        return this.boardsService.countSearchBoards(title);
+    }
+
+    @Get('count')
+    countBoards():Promise<number>{
+        return this.boardsService.countBoards();
     }
 
     @Get('myBoards')
@@ -59,7 +75,14 @@ export class BoardsController {
         @Body() status
     ): Promise<Board>{
         let realstatus = status.status;
+        console.log(realstatus);
         return this.boardsService.patchStatus(id, realstatus);
+    }
+
+    @Get('comment/:id') // 여기서 아이디는 board의 아이디이다.
+    getComment( @Param('id') id:number):Promise<Comment[]>{
+        console.log('comment 받아오려고함')
+        return this.boardsService.getComment(id);
     }
     
 }

@@ -27,6 +27,7 @@ export class BoardRepository extends Repository<Board> {
             title,
             description,
             status: realstatus, 
+            user: user
          })
         await this.save(board);
         return board;

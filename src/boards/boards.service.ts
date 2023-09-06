@@ -8,6 +8,7 @@ import { Like, Not } from 'typeorm';
 import { Board } from './boards.entity';
 import { User } from 'src/auth/user.entity';
 import { create } from 'domain';
+import { Comment } from 'src/comment/comment.entity';
 
 @Injectable()
 export class BoardsService {
@@ -30,9 +31,34 @@ export class BoardsService {
         return this.boardRepository.sortBoards(boards, page, pageSize);
     }
 
+    async countSearchBoards(title:string):Promise<number>{
+        let boards = await this.boardRepository.find({
+                where:
+                {
+                    title : Like(`%${title}%`), 
+                    status: Not(BoardStatus.DELETED)
+                }
+        })
+        return boards.length;
+    }
+
+    async countBoards():Promise<number>{
+        let boards;
+        boards = await this.boardRepository.find({where: {status: Not(BoardStatus.DELETED)}});
+        
+        return boards.length;
+    }
+
     async getMyBoards(user:User): Promise<Board[]>{
         const boards = await user.boards;
-        return boards;
+        let realBoards=[];
+        for(let i=0; i<boards.length; i++){
+            if(boards[i].status == BoardStatus.DELETED){
+
+            }else { realBoards.push(boards[i]) }
+        }
+        await realBoards;
+        return realBoards;
     }
 
     async createBoard(createBoardDto:CreateBoardmDto,user:User): Promise<Board>{
@@ -65,5 +91,10 @@ export class BoardsService {
         board.status = realstatus;
         await this.boardRepository.save(board);
         return board;
+    }
+
+    async getComment(id:number):Promise<Comment[]>{
+        const board = await this.boardRepository.findOneBy({id});
+        return board.comment;
     }
 }

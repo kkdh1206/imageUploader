@@ -1,6 +1,7 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { BoardStatus } from "./board-status.enum";
 import { User } from "src/auth/user.entity";
+import { Comment } from "src/comment/comment.entity";
 
 @Entity()
 export class Board extends BaseEntity{
@@ -24,6 +25,9 @@ export class Board extends BaseEntity{
 
     @ManyToOne(type => User, user => user.boards, {eager: false})
     user: User;
+
+    @OneToMany(type => Comment, comment => comment.board, {eager:true})
+    comment: Comment[]
 
     
 }
