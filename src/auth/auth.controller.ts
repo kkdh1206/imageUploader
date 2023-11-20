@@ -8,6 +8,7 @@ import { JwtAuthGuard2 } from './jwt-auth.guard2';
 import { UserStatus } from './user-status.enum';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { UserImage } from './user.image';
+import { get } from 'http';
 
 @Controller('auth')
 export class AuthController {
@@ -15,14 +16,14 @@ export class AuthController {
                 private userImage : UserImage,
         ){}// controller에서 service 쓰려면 만들어 줘야함
 
-    // @Get('/username') // 파이어베이스에서 유저네임 등록 및 중복여부 확인  -- 회원가입 전에 닉네임 만들기
-    // checkUsername(@Body(ValidationPipe) authCredentialsDto:AuthCredentialsDto):Promise<boolean>{
-    //     console.log(authCredentialsDto);
-    //     const {username, Email} = authCredentialsDto
-    //     // console.log('!!!!!!!!!!!!!!!!');
-    //     // console.log(username);
-    //     return this.authService.checkUsername(username); // 가능 불가능을 ture false로 반환해줌
-    // }
+    @Get('/username') // 파이어베이스에서 유저네임 등록 및 중복여부 확인  -- 회원가입 전에 닉네임 만들기
+    checkUsername(@Body(ValidationPipe) authCredentialsDto:AuthCredentialsDto):Promise<boolean>{ // 이거 통과안되면 회원가입 안되게 만들기
+        console.log(authCredentialsDto);
+        const {username, Email} = authCredentialsDto
+        // console.log('!!!!!!!!!!!!!!!!');
+        // console.log(username);
+        return this.authService.checkUsername(username); // 가능 불가능을 ture false로 반환해줌
+    }
 
 
     @Get('/userInfo') 
@@ -58,6 +59,18 @@ export class AuthController {
         return this.authService.signIn(req.uid);
     }
 
+    @Patch('/fcmToken')
+    @UseGuards(JwtAuthGuard)
+    patchFcmToken(
+        @Req() req,
+        @Body() fcmToken
+    ): Promise<string> {
+        const token = fcmToken.fcmToken
+        console.log('????????????')
+        console.log(token);
+        return this.authService.fcmToken(req.uid, token);
+    }
+
     @Patch('/patch/status/:id')  // 이건 데이터베이스에서 구현하기로 함  --> 그래서 이건 안쓰는 함수
     @UseGuards(JwtAuthGuard)
     patchUserStatus(
@@ -69,6 +82,16 @@ export class AuthController {
         return this.authService.patchUserStatus(id, status);
     } 
 }
+
+    @Patch('/userScore/:id')
+    @UseGuards(JwtAuthGuard)
+    patchUserScore(
+        @Req() requestAnimationFrame,
+        @Param('id') id:number,
+        @Body('score') score:number
+    ): Promise<User>{
+        return this.authService.patchUserScore(id,score);
+    }
 
     @Patch('/patch/userinformation/image')
     @UseGuards(JwtAuthGuard)
@@ -104,6 +127,18 @@ export class AuthController {
         const name = username.username;  // json 파싱하는 코드
         return this.authService.patchUserInformationUsername(req.uid, name);
     } 
+
+
+    @Get('/fcmToken')
+    @UseGuards(JwtAuthGuard)
+    getFcmToken(
+        @Body() data
+    ): Promise<string> {
+        const uid = data.uid
+        console.log('????????????')
+        console.log(uid);
+        return this.authService.getFcmToken(uid);
+    }
 
     
 

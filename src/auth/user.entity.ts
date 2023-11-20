@@ -1,6 +1,6 @@
 import { Item } from "src/item/item.entity";
 import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
-import { UserStatus } from "./user-status.enum";
+import { UserGrade, UserStatus } from "./user-status.enum";
 import { Board } from "src/boards/boards.entity";
 
 @Entity()
@@ -17,10 +17,16 @@ export class User extends BaseEntity{
     username: string;    // 처음에 username 도 설정 받아와야함 플러터에서
 
     @Column()
+    realname: string;
+
+    @Column()
     studentNumber: string;
 
     @Column()
     imageUrl: string;
+
+    @Column()
+    FCM_token: string;
 
     @Column()
     uid: string;
@@ -29,7 +35,16 @@ export class User extends BaseEntity{
     online: boolean;
 
     @Column()
+    userGrade: UserGrade; // 유저 학점
+
+    @Column()
+    userScore: number; // 유저 점수 -> 이걸 기반으로 + - 되서 점수를 합산해 등급을 결정
+
+    @Column()
     userstatus: UserStatus;
+
+    @Column('simple-array')
+    alarmList: Array<string>
 
     @Column('simple-array')
     interestedId : Array<number>  

@@ -6,6 +6,8 @@ export class AuthCredentialsDto {
     @MaxLength(10)
     username : string; // 사실상 이놈만 여기서 새로 받는 dto 이고  나머지 Email 과 password 는 파이어베이스에서 받아온다
 
+    realname: string;
+
     Email: string;
 
     studentNumber: string;

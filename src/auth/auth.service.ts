@@ -5,7 +5,7 @@ import { User } from './user.entity';
 import * as bcrypt from 'bcryptjs';
 import { stringify } from 'querystring';
 import { JwtService } from '@nestjs/jwt';
-import { UserStatus } from './user-status.enum';
+import { UserGrade, UserStatus } from './user-status.enum';
 import { UserImage } from './user.image';
 
 @Injectable()
@@ -64,13 +64,53 @@ export class AuthService {
         const exist =  await this.userRepository.findOne({where: {username :name}}); // 여기 오류 있는듯 수정요망!!!! user에서 username 파트를 고쳐줘야함
         console.log(name);
         console.log(exist);
-        if (exist == null){return true}
+        if (name ==''){ return false}
+        else if (exist == null){return true}
         else {return false}
     }
 
     async patchUserStatus(id:number, status:UserStatus){
         const user = await this.userRepository.findOneBy({id});
         user.userstatus = status;
+        await this.userRepository.save(user);
+
+        return user
+    }
+
+    async patchUserScore(id:number, score:number){
+        const user = await this.userRepository.findOneBy({id});
+        user.userScore = user.userScore + score;
+        if(user.userScore >= 100){
+            user.userGrade = UserGrade.Aplus;
+        }
+        else if(user.userScore >= 90){
+            user.userGrade = UserGrade.A0;
+        }
+        else if(user.userScore >= 80){
+            user.userGrade = UserGrade.Aminus;
+        }
+        else if(user.userScore >= 70){
+            user.userGrade = UserGrade.Bplus;
+        }
+        else if(user.userScore >= 60){
+            user.userGrade = UserGrade.B0;
+        }
+        else if(user.userScore >= 50){
+            user.userGrade = UserGrade.Bminus;
+        }
+        else if(user.userScore >= 40){
+            user.userGrade = UserGrade.Cplus;
+        }
+        else if(user.userScore >= 30){
+            user.userGrade = UserGrade.C0;
+        }
+        else if(user.userScore >= 20){
+            user.userGrade = UserGrade.Cminus;
+        }
+        else{
+            user.userGrade = UserGrade.F;
+        }
+
         await this.userRepository.save(user);
 
         return user
@@ -92,6 +132,20 @@ export class AuthService {
         console.log(user.username);
         await this.userRepository.save(user);
         return user
+    }
+
+    async fcmToken(uid, token){
+        const user = await this.userRepository.findOne({where: {uid :uid}})
+        user.FCM_token = token;
+        await this.userRepository.save(user);
+        console.log('저장된 토큰 ==', user.FCM_token);
+        return user.FCM_token;
+    }
+
+    async getFcmToken(uid){
+        const user = await this.userRepository.findOne({where: {uid :uid}})
+        console.log('상대의 토큰 ==', user.FCM_token);
+        return user.FCM_token;
     }
     
 }

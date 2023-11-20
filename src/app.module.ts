@@ -10,7 +10,8 @@ import { BoardsModule } from './boards/boards.module';
 import { CommentController } from './comment/comment.controller';
 import { CommentService } from './comment/comment.service';
 import { CommentModule } from './comment/comment.module';
-import { ChatBackEndGateway } from './socket.gateway.ts/socket.gateway';
+// import { ChatBackEndGateway } from './socket.gateway/socket.gateway';
+import { ItemCommentModule } from './itemComment/itemComment.module';
 
 
 @Module({
@@ -21,6 +22,7 @@ import { ChatBackEndGateway } from './socket.gateway.ts/socket.gateway';
     AuthModule,
     BoardsModule,
     CommentModule,
+    ItemCommentModule,
     // ChatBackEndGateway
   ],
  

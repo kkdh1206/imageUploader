@@ -48,7 +48,7 @@ export class ItemsController {
     @Get('itemId/:id')  // id 는 플러터에 있을듯 이걸로 호출해도 되고 아니면 플러터에서 받은 값을 바탕으로 바로 처리해도 될듯 따라서 이건 쓸지 안쓸지는 선택!  
     async getItembyId(@Param('id') id: number) : Promise<User> { 
         var item = await this.itemsService.getItemById(id);
-        item = await this.itemsService.getOwner(id);
+        item = await this.itemsService.getOwneruid(id);
         // console.log(item.user);
         return item.user;
     }
@@ -156,7 +156,31 @@ export class ItemsController {
         return this.itemsService.deleteImage(id, image);
     }
 
-       
+    
+    @Post('/myAlarmCategory')
+    async addAlarm(
+        @Req() req,
+        @Body() category
+    ):Promise<User>{
+        const alarmCategory = category.category
+        return this.itemsService.addAlarm(alarmCategory, req.user);
+    }
+
+    @Patch('/myAlarmCategory')
+    async deleteAlarm(
+        @Req() req,
+        @Body() category
+    ):Promise<User>{
+        const alarmCategory = category.category
+        return this.itemsService.deleteAlarm(alarmCategory, req.user);
+    }
+
+    @Get('/myAlarmCategory')
+    async getAlarm(
+        @Req() req,
+    ):Promise<Array<string>>{
+        return this.itemsService.getAlarm(req.user);
+    }
         
 
     @Post('/myInterestedItem/:id')

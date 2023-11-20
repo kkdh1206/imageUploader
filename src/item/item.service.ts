@@ -129,7 +129,7 @@ export class ItemsService {
         return this.itemRepository.searchItem(items, sort, page, pageSize )
     }
 
-    async getOwner(itemId:number):Promise<Item | undefined>{
+    async getOwneruid(itemId:number):Promise<Item | undefined>{
         const item = await this.itemRepository
         .createQueryBuilder('item')
         .leftJoinAndSelect('item.user', 'user')
@@ -137,6 +137,8 @@ export class ItemsService {
         .getOne();
         return item;
     }
+
+    
 
 
 
@@ -155,7 +157,27 @@ export class ItemsService {
         }
         console.log(item);
         return this.itemRepository.searchItem(item, sort, page, pageSize);
+
      }
+
+    async addAlarm ( category:string, user:User ):Promise<User> {
+        const currentUser = await this.userRepository.findOne({where:{uid: user.uid}})
+        currentUser.alarmList.push(category)
+        this.userRepository.save(currentUser);
+        return currentUser
+    }
+
+    async deleteAlarm ( category:string, user:User ):Promise<User> {
+        const currentUser = await this.userRepository.findOne({where:{uid: user.uid}})
+        currentUser.alarmList = currentUser.alarmList.filter((item) => item !== category);
+        await this.userRepository.save(currentUser);
+        return currentUser
+    }
+
+    async getAlarm (user:User): Promise<Array<string>>{
+        const currentUser = await this.userRepository.findOne({where:{uid: user.uid}})
+        return currentUser.alarmList;
+    }
 
     async deleteInterested ( id: number, user:User ):Promise<User> {
         const currentUser = await this.userRepository.findOne({where:{uid: user.uid}})
@@ -163,6 +185,8 @@ export class ItemsService {
         await this.userRepository.save(currentUser);
         return currentUser
     }
+
+   
 
     async addInterested ( id: number, user:User ):Promise<User> {
         const currentUser = await this.userRepository.findOne({where:{uid: user.uid}})

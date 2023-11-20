@@ -26,7 +26,7 @@ export class BoardsService {
     async getSearchedBoard(title: string, page:number, pageSize:number): Promise<Board[]|boolean>{
         const boards = await this.boardRepository.find({
             where: {title : Like(`%${title}%`), 
-                    status: Not(BoardStatus.DELETED)}
+                    status: BoardStatus.PUBLIC}
         })
         return this.boardRepository.sortBoards(boards, page, pageSize);
     }
@@ -57,6 +57,12 @@ export class BoardsService {
 
             }else { realBoards.push(boards[i]) }
         }
+        realBoards.sort((a, b) => {
+            if (a.updatedAt < b.updatedAt) return 1;
+            if (a.updatedAt > b.updatedAt) return -1;
+            return 0;
+          });
+
         await realBoards;
         return realBoards;
     }

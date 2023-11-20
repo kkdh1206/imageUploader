@@ -27,10 +27,10 @@ export class enumConvert{
         if(status == 'RESERVED'){
             return ItemStatus.RESERVED
         }
-        if(status == 'USERFASTSELL'){ // 유저가 올림
+        if(status == 'USERFASTSELL'){ // 유저가 올림  --->  관리자 페이지에서 뜨게 만들 예정
             return ItemStatus.USERFASTSELL
         }
-        if(status == 'SUPOFASTSELL'){ // 우리가 올림
+        if(status == 'SUPOFASTSELL'){ // 우리가 올림  ---> 일반 유저가 다 볼 수 있게 올라올 예정
             return ItemStatus.SUPOFASTSELL
         }
         if(status == 'SOLDOUT'){

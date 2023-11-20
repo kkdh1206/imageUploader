@@ -1,7 +1,8 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { ItemType, ItemStatus, ItemQuality } from "./item-status.enum";
 import { ItemImage } from "./item.Image";
 import { User } from "src/auth/user.entity";
+import { ItemComment } from "src/itemComment/itemComment.entity";
 
 @Entity()
 export class Item extends BaseEntity{
@@ -31,6 +32,9 @@ export class Item extends BaseEntity{
 
     @Column()
     quality: ItemQuality; 
+
+    @OneToMany(type => ItemComment, comment => comment.item, {eager:true})
+    comment: ItemComment[]
 
     @Column('simple-array')
     ImageUrls: Array<string>; // string으로 해야하지 itemImage 는 함수로 써야지 데이터타입이 될 수 가 없다.
