@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as firebase from 'firebase-admin';
-import * as serviceAccount from 'supomarket-b55d0-firebase-adminsdk-ca1u5-26b9b49278.json';
+import * as serviceAccount from 'supomarket-a3483-firebase-adminsdk-p4zki-c20dcb6dd8.json';
 // import * as serviceAccount from '../loginlogout-a2fce-firebase-adminsdk-jzdcb-d17ecdae08.json';
 import * as config from 'config';
 

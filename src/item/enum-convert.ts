@@ -11,8 +11,8 @@ export class enumConvert{
         if(category == 'REFRIGERATOR'){
             return ItemType.REFRIGERATOR
         }
-        if(category == 'MORNITER'){
-            return ItemType.MORNITOR
+        if(category == 'MONITOR'){
+            return ItemType.MONITOR
         }
         if(category == 'ROOM'){
             return ItemType.ROOM

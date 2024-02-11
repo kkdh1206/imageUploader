@@ -21,9 +21,12 @@ export class UserRepository extends Repository<User> {
             imageUrl: 'https://i.ibb.co/LPK9dGH/image.png',
             interestedId: [],
             alarmList: [],
+            requests: [],
+            history: [],
             online: false,
-            userGrade: UserGrade.F,
-            userScore: 0,
+            alarm: false,
+            userGrade: UserGrade.C0,
+            userScore: 30,
             FCM_token: 'none',
         }); // password를 저장할때 hash처리된 놈을 보안을 위해 저장
         console.log(`current =================== ${user}`);

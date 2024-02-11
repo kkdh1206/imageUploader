@@ -7,12 +7,14 @@ import { stringify } from 'querystring';
 import { JwtService } from '@nestjs/jwt';
 import { UserGrade, UserStatus } from './user-status.enum';
 import { UserImage } from './user.image';
+import { ItemRepository } from 'src/item/item.repository';
 
 @Injectable()
 export class AuthService {
     constructor(
         //@InjectRepository(USerRepository)  내가 만든 custom 은 이거 안씀
         private userRepository: UserRepository,
+        //private itemRepository: ItemRepository,
         private jwtService: JwtService,
         private userImage : UserImage
     ){}// 여기가 body부분이라는데 무슨기능일까??
@@ -65,13 +67,13 @@ export class AuthService {
         console.log(name);
         console.log(exist);
         if (name ==''){ return false}
-        else if (exist == null){return true}
+        else if (exist == null||exist.userstatus == UserStatus.DELETED){return true}
         else {return false}
     }
 
-    async patchUserStatus(id:number, status:UserStatus){
+    async patchUserStatus(id:number){
         const user = await this.userRepository.findOneBy({id});
-        user.userstatus = status;
+        user.userstatus = UserStatus.DELETED;
         await this.userRepository.save(user);
 
         return user
@@ -146,6 +148,37 @@ export class AuthService {
         const user = await this.userRepository.findOne({where: {uid :uid}})
         console.log('상대의 토큰 ==', user.FCM_token);
         return user.FCM_token;
+    }
+
+    async addRequest(seller:User, itemId: number, buyer: string){
+        const request = itemId.toString()+' '+seller.id.toString();
+        console.log("1111111111");
+        const user = await this.userRepository.findOne({where: {uid :buyer}}); // buyer 찾기
+        console.log(user.username);
+        user.requests.push(request); // request 푸시
+        console.log("2222222222");
+        await this.userRepository.save(user); // 변경내용 저장
+        return request;
+    }
+
+    async getRequest(uid){
+        const user = await this.userRepository.findOne({where:{uid:uid}});
+        return user.requests;
+    }
+
+    async deleteRequest(seller:string, itemId: number, buyer: User){
+        // const item = await this.itemRepository.findOne({where: {id: itemId}});
+        console.log('???????????????????????????????????/');
+        const request = itemId.toString()+' '+seller;
+        console.log("itemId ", itemId)
+        console.log("userId ", seller);
+        console.log(request);
+        const user = await this.userRepository.findOne({where: {uid :buyer.uid}}); // buyer 찾기
+        
+        user.requests = user.requests.filter((element) => element !== request); // 같지 않은 놈만 살림
+        console.log(user.requests);
+        await this.userRepository.save(user); // 변경내용 저장
+        return user.requests;
     }
     
 }

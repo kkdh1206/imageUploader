@@ -10,6 +10,7 @@ import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 import { User } from "src/auth/user.entity";
 import { AuthService } from "src/auth/auth.service";
 import { SearchItemDto } from "./DTO/search-item.dto";
+import { ItemComment } from "src/itemComment/itemComment.entity";
 
 // 플러터 dio 요청시 formData 는 사진 포함할때, json은 사진이 없을때 사용하면 된다.
 
@@ -51,6 +52,60 @@ export class ItemsController {
         item = await this.itemsService.getOwneruid(id);
         // console.log(item.user);
         return item.user;
+    }
+
+    @Get('id/:id')  // id 는 플러터에 있을듯 이걸로 호출해도 되고 아니면 플러터에서 받은 값을 바탕으로 바로 처리해도 될듯 따라서 이건 쓸지 안쓸지는 선택!  
+    async getbyId(@Param('id') id: number) : Promise<String> { 
+        var item = await this.itemsService.getItemById(id);
+        item = await this.itemsService.getOwneruid(id);
+        console.log(id);
+        console.log(">>>>>>>>>>>>>>",item.title);
+        // console.log(item.user);
+        return item.title;
+    }
+
+    @Get('idList')  // id 는 플러터에 있을듯 이걸로 호출해도 되고 아니면 플러터에서 받은 값을 바탕으로 바로 처리해도 될듯 따라서 이건 쓸지 안쓸지는 선택!  
+    async getbyIdList(@Body('id') idList: Array<number>) : Promise<Array<String>> { 
+        console.log(idList);
+        var titles=[];
+        for(var i=0; i<idList.length; i++){
+            var item = await this.itemsService.getItemById(idList[i]);
+            if(item != null){
+                titles.push(item.title);
+            }
+            
+            console.log(item.title, " zzz ");
+            
+        }
+        return titles;
+    }
+
+    @Get('imgList')  // id 는 플러터에 있을듯 이걸로 호출해도 되고 아니면 플러터에서 받은 값을 바탕으로 바로 처리해도 될듯 따라서 이건 쓸지 안쓸지는 선택!  
+    async getbyImgList(@Body('id') idList: Array<number>) : Promise<Array<String>> { 
+        console.log(idList);
+        var images=[];
+        for(var i=0; i<idList.length; i++){
+            var item = await this.itemsService.getItemById(idList[i]);
+            if(item !=null){
+                images.push(item.ImageUrls);
+            }
+            
+        }
+        return images;
+    }
+
+    @Patch('imgList')  // id 는 플러터에 있을듯 이걸로 호출해도 되고 아니면 플러터에서 받은 값을 바탕으로 바로 처리해도 될듯 따라서 이건 쓸지 안쓸지는 선택!  
+    async patchImgList(@Body('id') idList: Array<number>) : Promise<Array<String>> { 
+        console.log(idList);
+        var images=[];
+        for(var i=0; i<idList.length; i++){
+            var item = await this.itemsService.getItemById(idList[i]);
+            if(item !=null){
+                images.push(item.ImageUrls);
+            }
+            
+        }
+        return images;
     }
 
     // @Get('title/:title')  // id 별로 들어갈수 있게 해서 결론적으로 카테고리에서 검색해서 들어가든지 아니면 전체 아이템중에 찾아서 들어가든지 들어가면 items/:id 로 Get 하여 접근하게 만듬 
@@ -162,6 +217,7 @@ export class ItemsController {
         @Req() req,
         @Body() category
     ):Promise<User>{
+        
         const alarmCategory = category.category
         return this.itemsService.addAlarm(alarmCategory, req.user);
     }
@@ -183,7 +239,7 @@ export class ItemsController {
     }
         
 
-    @Post('/myInterestedItem/:id')
+    @Post('/myInterestedItem/:id') 
     async addInterested(
         @Req() req,
         @Param('id') id:number
@@ -207,6 +263,40 @@ export class ItemsController {
         @Query() searchItemDto: SearchItemDto, @Query('page') page:number, @Query('pageSize') pageSize: number = 10 
     ): Promise <Item[]|boolean>{
         return this.itemsService.getInterested(req.user, searchItemDto, page, pageSize);
+    }
+
+
+    @Post('/myHistory/add') // 거래가 끝난 user한테 판매 완료
+    async addHistory(
+        @Req() req,
+        @Body('id') id:number
+    ):Promise<User>{
+        
+        return this.itemsService.addHistory(id, req.user);
+    }
+
+    @Patch('/myHistory/delete')
+    async deleteHistory(
+        @Body('id') id:number
+    ) {
+        console.log("오긴해???");
+        return this.itemsService.deleteHistory(id);
+    }
+
+
+
+    @Get('/myHistory')
+    async getHistory(
+        @Req() req,
+        @Query() searchItemDto: SearchItemDto, @Query('page') page:number, @Query('pageSize') pageSize: number = 10 
+    ): Promise <Item[]|boolean>{
+        return this.itemsService.getHistory(req.user, searchItemDto, page, pageSize);
+    }
+
+    @Get('comment/:id') // 여기서 아이디는 item의 아이디이다.
+    getComment( @Param('id') id:number):Promise<ItemComment[]>{
+        console.log('comment 받아오려고함')
+        return this.itemsService.getComment(id);
     }
 
 

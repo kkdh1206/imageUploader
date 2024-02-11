@@ -5,7 +5,7 @@ import { ItemCommentService } from './itemComment.service';
 import { ItemComment } from './itemComment.entity';
 
 
-@Controller('comment')
+@Controller('itemComment')
 @UseGuards(JwtAuthGuard)
 export class ItemCommentController {
   constructor(private readonly itemCommentService: ItemCommentService) {}
@@ -18,8 +18,5 @@ export class ItemCommentController {
   }
 
 
-//   @Get()
-//   async getMyComments(@Request() req) {
-//     return this.commentService.getCommentsByUserId(req.user.id);
-//   }
+
 }

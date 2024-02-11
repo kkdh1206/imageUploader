@@ -1,7 +1,8 @@
 export enum UserStatus { 
     NORMAL ='NORMAL',
     ADMIN = 'ADMIN',
-    BANNED = 'BANNED'  
+    BANNED = 'BANNED',
+    DELETED = 'DELETED'  
 }
 
 export enum UserGrade {

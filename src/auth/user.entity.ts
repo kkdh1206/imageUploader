@@ -4,7 +4,7 @@ import { UserGrade, UserStatus } from "./user-status.enum";
 import { Board } from "src/boards/boards.entity";
 
 @Entity()
-@Unique(['Email']) // 같은 username 혹은 Email 사용하면 오류 뜨게됨   --> 이 방법 말고도 findOne 함수로 entity에 존재하는지 확인해서 에러주는 방법도 있다.
+@Unique(['Email']) // 같은 Email 사용하면 오류 뜨게됨   --> 이 방법 말고도 findOne 함수로 entity에 존재하는지 확인해서 에러주는 방법도 있다.
 export class User extends BaseEntity{
     
     @PrimaryGeneratedColumn()
@@ -32,6 +32,9 @@ export class User extends BaseEntity{
     uid: string;
 
     @Column()
+    alarm: boolean;
+
+    @Column()
     online: boolean;
 
     @Column()
@@ -42,6 +45,16 @@ export class User extends BaseEntity{
 
     @Column()
     userstatus: UserStatus;
+
+
+    // @Column('simple-array', {nullable: false}) // 여기서 구매 내역이 맞는 건지 확인하는 아이템과 유저 아이디를 묶은 클래스를 리스트 요소로 가짐
+    // requests: Array<Request>// --> 기본 타입이 아닌 경우는 Entity 만 <> 안에 들어갈 수 있다
+
+    @Column('simple-array') // 여기서 구매 내역이 맞는 건지 확인하는 아이템과 유저 아이디를 묶은 클래스를 리스트 요소로 가짐
+    requests: Array<string>
+
+    @Column('simple-array',{nullable : true})
+    history: Array<number>
 
     @Column('simple-array')
     alarmList: Array<string>

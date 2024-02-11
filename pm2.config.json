@@ -1,7 +1,7 @@
 {
     "apps": [
       {
-        "name": "nestjs-image-uploader",
+        "name": "supomarket",
         "script": "npm",
         "args": "run start:prod"
       }

@@ -16,7 +16,10 @@ export class ItemPaginationService { // 페이지네이션을 작동하는 구�
     console.log(itemCount);
     console.log('if문 시작')
     if( startIndex< itemCount){ // index는 0부터 시작이라 itemCount에서 1 빼줘야 할 지도 --> test 해보기!!!
-    const endIndex = startIndex + pageSize;
+    const endIndex = startIndex + Number(pageSize);
+    console.log("~~~~~~~~~~~~~~~~~~");
+    console.log(startIndex,endIndex, endIndex - 12);
+    console.log("~~~~~~~~~~~~~~~~~~");
     console.log('아이템 배송')
     return items.slice(startIndex, endIndex);
     }

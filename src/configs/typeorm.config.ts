@@ -13,8 +13,12 @@ export const typeORMConfig : TypeOrmModuleOptions = {
     password:  dbConfig.password || process.env.RDS_PASSWORD ,
     database: process.env.RDS_DB_NAME || dbConfig.database,
     entities: [__dirname + `/../**/*.entity.{js,ts}`], // entity 인식 못할수도 있어 직접 입력해준것
-    synchronize : dbConfig.synchronize
+    synchronize : dbConfig.synchronize,
+
+    timezone: 'Z' // 시간 세계협정시로 둠
 
     // Vultr 에 알맞은 놈으로 변환 필요
 }
+
+
 // npm build 는 db 쪽 건드리면 typescript 를 javascript 로 바꿔줌

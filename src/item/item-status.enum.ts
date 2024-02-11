@@ -11,7 +11,7 @@ export enum ItemType{
     BOOK = 'BOOK',
     CLOTHES = 'CLOTHES',
     REFRIGERATOR = 'REFRIGERATOR',
-    MORNITOR = 'MORNITOR',
+    MONITOR = 'MONITOR',
     ROOM = 'ROOM',
     ETC = 'ETC'
 }
@@ -27,4 +27,9 @@ export enum ItemQuality{
     HIGH ='HIGH',
     MID = 'MID',
     LOW = 'LOW'
+}
+
+export enum SoldItemStatus{
+    VISIBLE = "VISIBLE",
+    INVISIBLE ="INVISIBLE"
 }

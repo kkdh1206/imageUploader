@@ -3,7 +3,7 @@ import { ItemRepository } from './item.repository';
 import { Item } from './item.entity';
 import { CreateItemDto } from './DTO/create-item.dto';
 import { ItemImage } from './item.Image';
-import { ItemType, ItemStatus } from './item-status.enum';
+import { ItemType, ItemStatus, SoldItemStatus } from './item-status.enum';
 import { User } from 'src/auth/user.entity';
 import { In, Like, Not } from 'typeorm';
 import { SearchItemDto } from './DTO/search-item.dto';
@@ -11,6 +11,7 @@ import { UserRepository } from 'src/auth/user.repository';
 import { ItemPaginationService } from './pagination.service';
 import { enumConvert } from './enum-convert';
 import { stat } from 'fs';
+import { ItemComment } from 'src/itemComment/itemComment.entity';
 
 @Injectable()
 export class ItemsService {
@@ -161,7 +162,8 @@ export class ItemsService {
      }
 
     async addAlarm ( category:string, user:User ):Promise<User> {
-        const currentUser = await this.userRepository.findOne({where:{uid: user.uid}})
+        const currentUser = await this.userRepository.findOne({where:{uid: user.uid}});
+        console.log(category,"????????????????????????");
         currentUser.alarmList.push(category)
         this.userRepository.save(currentUser);
         return currentUser
@@ -215,6 +217,50 @@ export class ItemsService {
         return this.itemRepository.searchItem(items, sort, page, pageSize);
     }
 
+
+    async addHistory ( id: number, user:User ):Promise<User> {
+        const currentUser = await this.userRepository.findOne({where:{uid: user.uid}})
+        currentUser.history.push(id)
+        const item = await this.itemRepository.findOneBy({id});
+        item.sold = true;
+        this.userRepository.save(currentUser);
+        console.log("구매내역 ====", id, item.sold);
+        return currentUser
+    }
+
+    async deleteHistory ( id: number ):Promise<Item> {
+        console.log("이까진 왔음");
+        const item = await this.itemRepository.findOne({where:{id}});
+        console.log(item.soldItemType);
+        item.soldItemType = SoldItemStatus.INVISIBLE;
+        console.log(item.soldItemType);
+        await this.itemRepository.save(item);
+        return item;
+    }
+   
+
+    async getHistory (user:User, searchItemDto:SearchItemDto, page:number, pageSize:number):Promise<Item[]|boolean> {
+        const currentUser = await this.userRepository.findOne({where:{uid: user.uid}})
+        const { title,  sort, status } = searchItemDto; 
+        let historyArray = currentUser.history;
+        let items =[];
+        for(let i=0; i<historyArray.length; i++){
+            let id = historyArray[i]
+            let item = await this.itemRepository.findOne({where:{id:id, soldItemType: SoldItemStatus.VISIBLE}})
+            if(item != null){ 
+                items.push(item) // 타입과 id 가 맞는 아이템들을 items 리스트에 추가한다
+                }
+            else{} // 아무것도 안찾아져서 null이면 item Array에 추가하지 않는다.
+            console.log(id);
+            console.log(item);
+            console.log(items);
+        }
+        
+        return this.itemRepository.searchItem(items, sort, page, pageSize);
+    }
+
+    
+
     async getFastSellItem(searchItemDto:SearchItemDto, page:number, pageSize:number): Promise<Item[]|boolean> {
         const {title, sort, status} = searchItemDto;
         const item = await this.itemRepository.find({where:{ status:ItemStatus.USERFASTSELL}});
@@ -239,6 +285,12 @@ export class ItemsService {
     //     }
     //     return itemstatus;
     //  }
+
+
+    async getComment(id:number):Promise<ItemComment[]>{
+        const item = await this.itemRepository.findOneBy({id});
+        return item.comment;
+    }
 
      async deleteItem(id:number) : Promise<void> {
         const result = await this.itemRepository.delete({id});

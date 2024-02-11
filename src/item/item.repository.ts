@@ -2,7 +2,7 @@ import { CustomRepository } from "src/configs/typeorm-ex.decorator";
 import { Like, Repository } from "typeorm";
 import { Item } from "./item.entity";
 import { CreateItemDto } from "./DTO/create-item.dto";
-import { ItemType, ItemStatus, ItemQuality } from "./item-status.enum";
+import { ItemType, ItemStatus, ItemQuality, SoldItemStatus } from "./item-status.enum";
 import { ItemImage } from "./item.Image";
 import { ItemPaginationService } from "./pagination.service";
 import { enumConvert } from "./enum-convert";
@@ -14,7 +14,7 @@ export class ItemRepository extends Repository<Item> {
     private itemPaginationService : ItemPaginationService;
     private convert: enumConvert;
     
-    initializeDependencies(){
+    initializeDependencies(){ // constructor 사용 안되서 대체로 변수 초기화 위해 사용한것
         this.itemPaginationService = new ItemPaginationService();
         this.convert = new enumConvert();
     }    
@@ -35,6 +35,8 @@ export class ItemRepository extends Repository<Item> {
            price,
            quality: realQuality,
            user: user,
+           soldItemType: SoldItemStatus.VISIBLE,
+           sold: false,
            ImageUrls: images // 배열로 저장하려지만 entity에서 배열이 저장 안되서
         }) // 사진여러개면 배열로 주소 저장
         
@@ -45,7 +47,7 @@ export class ItemRepository extends Repository<Item> {
 
 
     async searchItem(items: Item[],sort:string, page:number, pageSize:number):Promise<Item[]|boolean>{
-        console.log(items);
+        // console.log(items);
         this.initializeDependencies();
         console.log(sort);
 

@@ -9,20 +9,57 @@ import { UserStatus } from './user-status.enum';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { UserImage } from './user.image';
 import { get } from 'http';
+import { UserRepository } from './user.repository';
 
 @Controller('auth')
 export class AuthController {
     constructor( private authService: AuthService,
                 private userImage : UserImage,
+                private userRepository: UserRepository
         ){}// controller에서 service 쓰려면 만들어 줘야함
 
     @Get('/username') // 파이어베이스에서 유저네임 등록 및 중복여부 확인  -- 회원가입 전에 닉네임 만들기
-    checkUsername(@Body(ValidationPipe) authCredentialsDto:AuthCredentialsDto):Promise<boolean>{ // 이거 통과안되면 회원가입 안되게 만들기
-        console.log(authCredentialsDto);
-        const {username, Email} = authCredentialsDto
-        // console.log('!!!!!!!!!!!!!!!!');
-        // console.log(username);
+    checkUsername(@Body('username') username):Promise<boolean>{ // 이거 통과안되면 회원가입 안되게 만들기
+        // console.log(authCredentialsDto);
+        // const {username, Email} = authCredentialsDto
+        // // console.log('!!!!!!!!!!!!!!!!');
+        // // console.log(username);
         return this.authService.checkUsername(username); // 가능 불가능을 ture false로 반환해줌
+    }
+
+    @Get('/userid/:id') // 파이어베이스에서 유저네임 등록 및 중복여부 확인  -- 회원가입 전에 닉네임 만들기
+    async getUserById(@Param('id') id ):Promise<User>{ // 이거 통과안되면 회원가입 안되게 만들기
+        const user = await this.userRepository.findOneBy({id});
+        return user; // 가능 불가능을 ture false로 반환해줌
+    }
+
+    @Get('/userUid') 
+    async getUserByUid(@Body('userUid') uid ):Promise<String>{
+        const user = await this.userRepository.findOne({where:{uid: uid}})
+        return user.username;
+    }
+
+    @Get('/userToImage') 
+    async getUserImage(@Body('username') name ):Promise<String>{
+        const user = await this.userRepository.findOne({where:{username: name}})
+        console.log(name);
+        console.log(user.imageUrl);
+        return user.imageUrl;
+    }
+
+    @Patch('/setAlarm') 
+    @UseGuards(JwtAuthGuard)  
+    async setAlarm(@Req() req, @Body('bool') bool) :Promise<void>{
+        const user = await this.userRepository.findOne({where:{uid:req.uid}});
+        user.alarm = bool;
+        await this.userRepository.save(user);
+    }
+
+    @Get('/getAlarm') 
+    @UseGuards(JwtAuthGuard)  
+    async getAlarm(@Req() req) :Promise<boolean>{
+        const user = await this.userRepository.findOne({where:{uid:req.uid}});
+       return user.alarm;
     }
 
 
@@ -71,22 +108,22 @@ export class AuthController {
         return this.authService.fcmToken(req.uid, token);
     }
 
-    @Patch('/patch/status/:id')  // 이건 데이터베이스에서 구현하기로 함  --> 그래서 이건 안쓰는 함수
+    @Patch('/patch/status/:id')  // 회원 탈퇴를 위해서 DELETED 만 존재함
     @UseGuards(JwtAuthGuard)
     patchUserStatus(
         @Req() req,  
         @Param('id') id:number,
-        @Body('status') status:UserStatus
+        // @Body('status') status:String
     ): Promise<User>{
-        if (req.user.status==UserStatus.ADMIN){
-        return this.authService.patchUserStatus(id, status);
-    } 
+        // if (req.user.status==UserStatus.ADMIN){
+        return this.authService.patchUserStatus(id);
+    // } 
 }
 
     @Patch('/userScore/:id')
     @UseGuards(JwtAuthGuard)
     patchUserScore(
-        @Req() requestAnimationFrame,
+        @Req() req,
         @Param('id') id:number,
         @Body('score') score:number
     ): Promise<User>{
@@ -140,9 +177,46 @@ export class AuthController {
         return this.authService.getFcmToken(uid);
     }
 
-    
+    @Post('/request')
+    @UseGuards(JwtAuthGuard)
+    addRequest(
+        @Body() data,
+        @Req() req
+    ): Promise<string>{
+        console.log('-------------------');
+        console.log(data);
+        console.log(data)
+        console.log('-------------------');
+
+        const buyerid = data.buyerUid;
+        const itemId = data.itemId;
+        console.log(itemId);
+        let seller = req.user;
+        return this.authService.addRequest(seller, itemId, buyerid); // 판사람 물건id, 구매한 사람
+    }
+
+    @Get('/request')
+    @UseGuards(JwtAuthGuard)
+    getRequest(
+        @Req() req
+    ): Promise<string[]>{
+        const user = req.user;
+        return this.authService.getRequest(user.uid); 
+    }
+
+    @Patch('/request')
+    @UseGuards(JwtAuthGuard)
+    deleteRequest(
+        @Req() req,
+        @Body() data
+    ): Promise<string[]>{
+        const buyer = req.user
+        // console.log(buyer.id);
+        const sellerid = data.sellerId;
+        const itemId = data.itemId;
+        return this.authService.deleteRequest(sellerid, itemId, buyer); 
+    }
+
+   
 
 }
-
-    
-

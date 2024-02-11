@@ -1,5 +1,5 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { ItemType, ItemStatus, ItemQuality } from "./item-status.enum";
+import { ItemType, ItemStatus, ItemQuality, SoldItemStatus } from "./item-status.enum";
 import { ItemImage } from "./item.Image";
 import { User } from "src/auth/user.entity";
 import { ItemComment } from "src/itemComment/itemComment.entity";
@@ -32,6 +32,12 @@ export class Item extends BaseEntity{
 
     @Column()
     quality: ItemQuality; 
+
+    @Column()
+    sold: Boolean;
+
+    @Column()
+    soldItemType: SoldItemStatus; 
 
     @OneToMany(type => ItemComment, comment => comment.item, {eager:true})
     comment: ItemComment[]
