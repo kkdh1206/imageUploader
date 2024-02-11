@@ -4,7 +4,7 @@ import { UserGrade, UserStatus } from "./user-status.enum";
 import { Board } from "src/boards/boards.entity";
 
 @Entity()
-@Unique(['Email']) // 같은 Email 사용하면 오류 뜨게됨   --> 이 방법 말고도 findOne 함수로 entity에 존재하는지 확인해서 에러주는 방법도 있다.
+// @Unique(['Email']) // 같은 Email 사용하면 오류 뜨게됨   --> 이 방법 말고도 findOne 함수로 entity에 존재하는지 확인해서 에러주는 방법도 있다.
 export class User extends BaseEntity{
     
     @PrimaryGeneratedColumn()
@@ -32,7 +32,10 @@ export class User extends BaseEntity{
     uid: string;
 
     @Column()
-    alarm: boolean;
+    chatAlarm: boolean;
+
+    @Column()
+    categoryAlarm: boolean;
 
     @Column()
     online: boolean;

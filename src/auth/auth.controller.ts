@@ -47,20 +47,28 @@ export class AuthController {
         return user.imageUrl;
     }
 
-    @Patch('/setAlarm') 
+    @Patch('/setChatAlarm') 
     @UseGuards(JwtAuthGuard)  
-    async setAlarm(@Req() req, @Body('bool') bool) :Promise<void>{
+    async setChatAlarm(@Req() req, @Body('bool') bool) :Promise<void>{
         const user = await this.userRepository.findOne({where:{uid:req.uid}});
-        user.alarm = bool;
+        user.chatAlarm = bool;
         await this.userRepository.save(user);
     }
 
-    @Get('/getAlarm') 
+    @Patch('/setCategoryAlarm') 
     @UseGuards(JwtAuthGuard)  
-    async getAlarm(@Req() req) :Promise<boolean>{
+    async setCategoryAlarm(@Req() req, @Body('bool') bool) :Promise<void>{
         const user = await this.userRepository.findOne({where:{uid:req.uid}});
-       return user.alarm;
+        user.categoryAlarm = bool;
+        await this.userRepository.save(user);
     }
+
+    // @Get('/getAlarm') // 짜피 안써서 수정도 안함
+    // @UseGuards(JwtAuthGuard)  
+    // async getAlarm(@Req() req) :Promise<boolean>{
+    //     const user = await this.userRepository.findOne({where:{uid:req.uid}});
+    //    return user.alarm;
+    // }
 
 
     @Get('/userInfo') 
@@ -118,7 +126,7 @@ export class AuthController {
         // if (req.user.status==UserStatus.ADMIN){
         return this.authService.patchUserStatus(id);
     // } 
-}
+ }
 
     @Patch('/userScore/:id')
     @UseGuards(JwtAuthGuard)
@@ -194,6 +202,43 @@ export class AuthController {
         let seller = req.user;
         return this.authService.addRequest(seller, itemId, buyerid); // 판사람 물건id, 구매한 사람
     }
+
+    @Get('/fcmTokenByCategory')
+    @UseGuards(JwtAuthGuard)
+    async getFcmTokenList(@Body('category') data): Promise<Array<String>> {
+        var tokens = [];
+        var dataCategory;
+        if(data.category == "Book") {
+            dataCategory = "책"
+        }
+        else if(data.category == "CLOTHES") {
+            dataCategory = "의류"
+        }
+        else if(data.category == "REFRIGERATOR") {
+            dataCategory = "냉장고"
+        }
+        else if(data.category == "MONITOR") {
+            dataCategory = "모니터"
+        }
+        else if(data.category == "ROOM") {
+            dataCategory = "자취방"
+        }
+        else if(data.category == "ETC") {
+            dataCategory = "ETC"
+        }
+
+        const founds = await this.authService.getFcmTokenList(dataCategory);
+        if(founds != null) {
+            for (const found in founds) {
+                tokens.push(founds[found].FCM_token);
+            }
+        }
+        else {
+            tokens.push("해당유저없음");
+        }
+        return tokens;
+    }
+
 
     @Get('/request')
     @UseGuards(JwtAuthGuard)

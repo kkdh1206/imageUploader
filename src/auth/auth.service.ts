@@ -40,8 +40,16 @@ export class AuthService {
 
     async signUp(authCredentialDto,uid) : Promise<void>{ //signUp 메소드 제작
         //console.log('컨트롤러는 통과');
+
+        // 파이어베이스 상에서 중복인 경우 에러코드를 줘서 할 필요가 없다 그냥 EMail 의 Unique만 풀어주면됨
+        // const { username, realname, Email, studentNumber } = authCredentialDto;
+        // const userExist = await this.userRepository.findOne({where:{Email: Email}})
+        // if(userExist == null || userExist.userstatus == UserStatus.DELETED){ // 이메일이 동일한 계정이 없거나 존재하더라도 삭제된 계정이면 true 반환
+        //     return true
+        // }
+        // else {return false} // 이미 존재하는 계정인 경우
         return this.userRepository.createUser(authCredentialDto,uid); // 값 아무것도 없는데 왜 return 해줘야할까?? --> 그니까 null값이고 promise도 void로 잡았지
-    } // 회원가입때는 반환값있으면 'null 값이 not null 제약조건을 위반' 이 뜬다.
+    } // 회원가입때는 반환값 있으면 'null 값이 not null 제약조건을 위반' 이 뜬다.
 
     async signIn(uid): Promise<User>{
         const user = await this.userRepository.findOne({where: {uid: uid}});
@@ -66,14 +74,15 @@ export class AuthService {
         const exist =  await this.userRepository.findOne({where: {username :name}}); // 여기 오류 있는듯 수정요망!!!! user에서 username 파트를 고쳐줘야함
         console.log(name);
         console.log(exist);
-        if (name ==''){ return false}
-        else if (exist == null||exist.userstatus == UserStatus.DELETED){return true}
+        if (name ==""|| name == "(알수없음)"){ return false} // 알수 없음 으로 회원탈퇴하면 할거라서
+        else if (exist == null){return true} // ||exist.userstatus == UserStatus.DELETED
         else {return false}
     }
 
     async patchUserStatus(id:number){
         const user = await this.userRepository.findOneBy({id});
         user.userstatus = UserStatus.DELETED;
+        user.username = "(알수없음)"; // 이름 알 수 없음으로 수정
         await this.userRepository.save(user);
 
         return user
@@ -149,6 +158,13 @@ export class AuthService {
         console.log('상대의 토큰 ==', user.FCM_token);
         return user.FCM_token;
     }
+
+    async getFcmTokenList(category: string) {
+        const founds = await this.userRepository.find();
+        const matching = founds.filter(found => found.alarmList && found.alarmList.includes(category));
+        return matching;
+    }
+
 
     async addRequest(seller:User, itemId: number, buyer: string){
         const request = itemId.toString()+' '+seller.id.toString();
