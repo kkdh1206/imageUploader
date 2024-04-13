@@ -20,6 +20,7 @@ export class UserRepository extends Repository<User> {
             studentNumber : studentNumber,
             imageUrl: 'https://i.ibb.co/LPK9dGH/image.png',
             interestedId: [],
+            hatedId: [],
             alarmList: [],
             requests: [],
             history: [],

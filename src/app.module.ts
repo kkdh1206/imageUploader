@@ -12,6 +12,7 @@ import { CommentService } from './comment/comment.service';
 import { CommentModule } from './comment/comment.module';
 // import { ChatBackEndGateway } from './socket.gateway/socket.gateway';
 import { ItemCommentModule } from './itemComment/itemComment.module';
+import { DeclaresModule } from './declare/declare.module';
 
 
 @Module({
@@ -21,6 +22,7 @@ import { ItemCommentModule } from './itemComment/itemComment.module';
     ConfigModule.forRoot({isGlobal : true}),
     AuthModule,
     BoardsModule,
+    DeclaresModule,
     CommentModule,
     ItemCommentModule,
     // ChatBackEndGateway

@@ -24,8 +24,10 @@ export class ItemsController {
 
     
     @Get() // - 페이지 네이션 된놈
-    getAllItem(@Query() searchItemDto: SearchItemDto, @Query('page') page:number, @Query('pageSize') pageSize: number = 10 ): Promise<Item[]|boolean> {
-        return this.itemsService.getAllItems(searchItemDto, page, pageSize); // fltter 에 json 형태로 데이터 가면 변환해줘야함
+    getAllItem(
+        @Req() req,
+        @Query() searchItemDto: SearchItemDto, @Query('page') page:number, @Query('pageSize') pageSize: number = 10 ): Promise<Item[]|boolean> {
+        return this.itemsService.getAllItems(req, searchItemDto, page, pageSize); // fltter 에 json 형태로 데이터 가면 변환해줘야함
     }
 
     // @Get('/itemCount')
@@ -263,6 +265,16 @@ export class ItemsController {
         @Query() searchItemDto: SearchItemDto, @Query('page') page:number, @Query('pageSize') pageSize: number = 10 
     ): Promise <Item[]|boolean>{
         return this.itemsService.getInterested(req.user, searchItemDto, page, pageSize);
+    }
+
+    @Patch('/hateItem/:id')
+    async hateItem(
+        @Req() req,
+        @Param('id') id:number
+    ):Promise<User>{
+        console.log("전송된 데이터: ");
+        console.log(id);
+        return this.itemsService.hateItem(id, req.user);
     }
 
 

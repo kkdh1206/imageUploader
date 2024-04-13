@@ -22,10 +22,14 @@ export class ItemsService {
         private convert: enumConvert
      ) {}
 
-     async getAllItems (searchItemDto:SearchItemDto, page:number, pageSize:number): Promise<Item[]|boolean> {
+     async getAllItems (req,searchItemDto:SearchItemDto, page:number, pageSize:number): Promise<Item[]|boolean> {
+        const user = await this.userRepository.findOne({where: {uid :req.uid}})
         const {title, sort, status} = searchItemDto;
         var realStatus = this.convert.statusConvert(status)
-        const items = await this.itemRepository.find({where: { status: realStatus} });
+        const items = await this.itemRepository.find({where: { 
+            status: realStatus,
+            id: Not(In(user.hatedId))
+        } });
 
         return this.itemRepository.searchItem(items,sort, page, pageSize ) // page랑 pageSize 끌고와주기
         
@@ -216,6 +220,16 @@ export class ItemsService {
         
         return this.itemRepository.searchItem(items, sort, page, pageSize);
     }
+
+
+    async hateItem ( id: number, user:User ):Promise<User> {
+        const currentUser = await this.userRepository.findOne({where:{uid: user.uid}})
+        currentUser.hatedId.push(id);
+        this.userRepository.save(currentUser);
+        return currentUser
+    }
+
+
 
 
     async addHistory ( id: number, user:User ):Promise<User> {

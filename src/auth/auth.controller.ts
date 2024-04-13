@@ -205,37 +205,41 @@ export class AuthController {
 
     @Get('/fcmTokenByCategory')
     @UseGuards(JwtAuthGuard)
-    async getFcmTokenList(@Body('category') data): Promise<Array<String>> {
+    async getFcmTokenList(@Body() data): Promise<Array<String>> {
         var tokens = [];
         var dataCategory;
-        if(data.category == "Book") {
+        if(data.category == "ItemType.BOOk") {
             dataCategory = "책"
         }
-        else if(data.category == "CLOTHES") {
+        else if(data.category == "ItemType.CLOTHES") {
             dataCategory = "의류"
         }
-        else if(data.category == "REFRIGERATOR") {
+        else if(data.category == "ItemType.REFRIGERATOR") {
             dataCategory = "냉장고"
         }
-        else if(data.category == "MONITOR") {
+        else if(data.category == "ItemType.MONITOR") {
             dataCategory = "모니터"
         }
-        else if(data.category == "ROOM") {
+        else if(data.category == "ItemType.ROOM") {
             dataCategory = "자취방"
         }
-        else if(data.category == "ETC") {
+        else if(data.category == "ItemType.ETC") {
             dataCategory = "ETC"
         }
 
         const founds = await this.authService.getFcmTokenList(dataCategory);
-        if(founds != null) {
+        if(founds && founds.length > 0) {
             for (const found in founds) {
-                tokens.push(founds[found].FCM_token);
+                if(founds[found].categoryAlarm) {
+                    tokens.push(founds[found].FCM_token);
+                }
             }
         }
         else {
             tokens.push("해당유저없음");
         }
+        console.log("생성된 토큰 리스트");
+        console.log(tokens);
         return tokens;
     }
 

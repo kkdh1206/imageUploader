@@ -160,6 +160,7 @@ export class AuthService {
     }
 
     async getFcmTokenList(category: string) {
+        console.log(category);
         const founds = await this.userRepository.find();
         const matching = founds.filter(found => found.alarmList && found.alarmList.includes(category));
         return matching;
