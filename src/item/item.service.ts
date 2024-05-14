@@ -12,6 +12,7 @@ import { ItemPaginationService } from './pagination.service';
 import { enumConvert } from './enum-convert';
 import { stat } from 'fs';
 import { ItemComment } from 'src/itemComment/itemComment.entity';
+import { UserStatus } from 'src/auth/user-status.enum';
 
 @Injectable()
 export class ItemsService {
@@ -28,7 +29,10 @@ export class ItemsService {
         var realStatus = this.convert.statusConvert(status)
         const items = await this.itemRepository.find({where: { 
             status: realStatus,
-            id: Not(In(user.hatedId))
+            id: Not(In(user.hatedId)),
+            user: {
+                userstatus: Not(In([UserStatus.BANNED, UserStatus.DELETED]))
+              }
         } });
 
         return this.itemRepository.searchItem(items,sort, page, pageSize ) // page랑 pageSize 끌고와주기

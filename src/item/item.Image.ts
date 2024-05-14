@@ -44,8 +44,10 @@ console.log("이까진 돌아감");
     console.log("이까진 돌아감????");
 
     const { data } = await firstValueFrom( // data라는놈만 추출   -- firstValueForm 은 요청해서 받을때 쓰임 정확한건 찾아보기
-      this.httpService.post(url, formData).pipe( // data를 받는다 정도만 알아도 될듯
+      
+    this.httpService.post(url, formData).pipe( // data를 받는다 정도만 알아도 될듯
         map((res) => {
+          console.log(res.data);
           return res.data;
           console.log("여긴가???");
         }),
