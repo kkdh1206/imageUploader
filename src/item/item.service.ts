@@ -81,7 +81,12 @@ export class ItemsService {
         }
         
         
-        
+    // async plusView(id: number): Promise<Item>{
+    //         var item = await this.getItemById(id);
+    //         item.view = item.view +1; // 1더함
+    //         await this.itemRepository.save(item);
+    //         return item;
+    //     }
     
 
     async patchItemStatus(id:number, status:string){
@@ -96,16 +101,18 @@ export class ItemsService {
 
     async getSearchedItem(searchItemDto:SearchItemDto,page:number,pageSize:number): Promise<Item[]|boolean>{
         const { title,  sort, status } = searchItemDto;
+        const processedTitle = title.replace(/\s+/g, '').toLowerCase();
         var realStatus = this.convert.statusConvert(status)
         // console.log(title);
 
-        const items = await this.itemRepository.find({
-            
-            where: {title : Like(`%${title}%`), //  동시 만족하는 놈만 잡아온다
-                    status: realStatus}         //  동시 만족하는 놈만 잡아온다
-        })
-        //   console.log(items);
-          return this.itemRepository.searchItem(items, sort, page, pageSize);
+        const items = await this.itemRepository
+        .createQueryBuilder('item') // 쿼리빌더로 복잡한건 진행해야함 - find는 단순한것만 가능
+        .where('LOWER(REPLACE(item.title, \' \', \'\')) LIKE :title', { title: `%${processedTitle}%` })
+        // 소문자화 시키고 띄어쓰기 다 붙여서 확인을 함
+        .andWhere('item.status = :status', { status: status }) // 동시에 만족하는놈 잡아옴
+        .getMany();
+          
+        return this.itemRepository.searchItem(items, sort, page, pageSize);
         }
         
         // const total = await this.itemRepository.count(); // 총 상품 몇개인지 알려주는데 사용하면 좋을듯
@@ -156,7 +163,12 @@ export class ItemsService {
         var realCategory = this.convert.categoryConvert(category);
         let realStatus = this.convert.statusConvert(status);
         console.log(status);
-        const item = await this.itemRepository.find({where:{ status:realStatus,category: realCategory}}); // 팔려나간건 안보여줌
+        const item = await this.itemRepository.find({where:{ 
+            status:realStatus,category: realCategory,
+            user: {
+                userstatus: Not(In([UserStatus.BANNED, UserStatus.DELETED]))
+              }
+        }}); // 팔려나간건 안보여줌
         // const item = await this.itemRepository.findBy({category}); // where 은 어디서 찾는지인듯 여기서는 : FindoptionsWhere<Item> 즉, entity에서 찾는다
         // findOneby로 하면 하나만 찾아와서 안된다
         // const found = await this.itemRepository.findOneBy({category});
@@ -212,7 +224,7 @@ export class ItemsService {
         let items =[];
         for(let i=0; i<interestedArray.length; i++){
             let id = interestedArray[i]
-            let item = await this.itemRepository.findOne({where:{id:id, status: Not(In([ItemStatus.DELETED, ItemStatus.USERFASTSELL]))}})
+            let item = await this.itemRepository.findOne({where:{id:id, status: Not(In([ItemStatus.DELETED, ItemStatus.USERFASTSELL, ItemStatus.SOLDOUT]))}})
             if(item != null){ 
                 items.push(item)
                 }
@@ -268,13 +280,18 @@ export class ItemsService {
             if(item != null){ 
                 items.push(item) // 타입과 id 가 맞는 아이템들을 items 리스트에 추가한다
                 }
-            else{} // 아무것도 안찾아져서 null이면 item Array에 추가하지 않는다.
             console.log(id);
             console.log(item);
             console.log(items);
         }
         
         return this.itemRepository.searchItem(items, sort, page, pageSize);
+    }
+
+    async getRecord (id:number):Promise<Item[]> {
+        const tagetUser = await this.userRepository.findOne({where:{id: id}});
+        let array = tagetUser.items;
+        return array;
     }
 
     

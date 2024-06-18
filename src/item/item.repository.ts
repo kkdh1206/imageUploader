@@ -33,6 +33,7 @@ export class ItemRepository extends Repository<Item> {
            status: realStatus, // status 선택가능하게 저
            category: realCategory,
            price,
+           view: 0,
            quality: realQuality,
            user: user,
            soldItemType: SoldItemStatus.VISIBLE,
@@ -66,7 +67,7 @@ export class ItemRepository extends Repository<Item> {
               });
         }
         
-        else if(sort=='DATEASCEND'){ // 최신순
+        else if(sort=='DATEASCEND'){ // 최신순 --> 수정 기준 말고 올린날자로 수정함
             items.sort((a, b) => {
                 if (a.updatedAt < b.updatedAt) return 1;
                 if (a.updatedAt > b.updatedAt) return -1;

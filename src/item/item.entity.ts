@@ -37,6 +37,9 @@ export class Item extends BaseEntity{
     sold: Boolean;
 
     @Column()
+    view: number;
+
+    @Column()
     soldItemType: SoldItemStatus; 
 
     @OneToMany(type => ItemComment, comment => comment.item, {eager:true})

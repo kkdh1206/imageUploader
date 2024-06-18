@@ -1,0 +1,6 @@
+export enum GroupStatus {
+    RECRUITING = 'RECRUITING',
+    PROCEEDING = 'PROCEEDING',
+    COMPLETED = 'COMPLETED',
+    DELETED = 'DELETED'
+}

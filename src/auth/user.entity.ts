@@ -3,6 +3,7 @@ import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique }
 import { UserGrade, UserStatus } from "./user-status.enum";
 import { Board } from "src/boards/boards.entity";
 import { Declare } from "src/declare/declare.entity";
+import { Group } from "src/group_buy/group.entity";
 
 @Entity()
 // @Unique(['Email']) // 같은 Email 사용하면 오류 뜨게됨   --> 이 방법 말고도 findOne 함수로 entity에 존재하는지 확인해서 에러주는 방법도 있다.
@@ -64,7 +65,10 @@ export class User extends BaseEntity{
     alarmList: Array<string>
 
     @Column('simple-array')
-    interestedId : Array<number>  
+    interestedId : Array<number>
+    
+    @Column('simple-array')
+    interestedGroupId : Array<number>
 
     @Column('simple-array')
     hatedId : Array<number> 
@@ -78,6 +82,8 @@ export class User extends BaseEntity{
     @OneToMany(type => Declare, declare => declare.user, {eager: true})
     declares: Declare[]
 
+    @OneToMany(type => Group, group => group.user, {eager: true})
+    groups: Group[]
    
 
 }

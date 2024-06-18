@@ -13,6 +13,7 @@ import { CommentModule } from './comment/comment.module';
 // import { ChatBackEndGateway } from './socket.gateway/socket.gateway';
 import { ItemCommentModule } from './itemComment/itemComment.module';
 import { DeclaresModule } from './declare/declare.module';
+import { GroupModule } from './group_buy/group.module';
 
 
 @Module({
@@ -25,6 +26,7 @@ import { DeclaresModule } from './declare/declare.module';
     DeclaresModule,
     CommentModule,
     ItemCommentModule,
+    GroupModule
     // ChatBackEndGateway
   ],
  

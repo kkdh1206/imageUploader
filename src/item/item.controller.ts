@@ -11,6 +11,7 @@ import { User } from "src/auth/user.entity";
 import { AuthService } from "src/auth/auth.service";
 import { SearchItemDto } from "./DTO/search-item.dto";
 import { ItemComment } from "src/itemComment/itemComment.entity";
+import { ItemRepository } from "./item.repository";
 
 // 플러터 dio 요청시 formData 는 사진 포함할때, json은 사진이 없을때 사용하면 된다.
 
@@ -19,6 +20,7 @@ import { ItemComment } from "src/itemComment/itemComment.entity";
 @UseGuards(JwtAuthGuard) 
 export class ItemsController {
     constructor(private itemsService: ItemsService,
+        private itemRepository: ItemRepository,
                 private itemImage: ItemImage
         ){}
 
@@ -42,6 +44,15 @@ export class ItemsController {
 
     // @Get('search')  -> /search?title="Dsdsdd%34%dsd&category=dddd&status page==20"
     // @Query('title') title;   
+
+
+    // @Patch('plusView/:id')
+    // async plusView(
+    //     @Param('id') id: number
+    // ): Promise<Item>{
+    //     return this.itemsService.plusView(id);
+    // }
+
     
     @Get('search') // like 함수로 검색 쿼리 만들어주기
     searchItem(@Query() searchItemDto: SearchItemDto, @Query('page') page:number, @Query('pageSize') pageSize: number = 10):Promise<Item[]|boolean>{  //--> 쿼리 설정 이거 어디서 받아오는지 알아보기
@@ -52,7 +63,21 @@ export class ItemsController {
     async getItembyId(@Param('id') id: number) : Promise<User> { 
         var item = await this.itemsService.getItemById(id);
         item = await this.itemsService.getOwneruid(id);
+        const currentUpdatedAt = item.updatedAt;
         // console.log(item.user);
+        // 여기에 view 추가
+        // const originalUpdatedAt = item.updatedAt;
+        
+        await this.itemRepository.createQueryBuilder()
+        .update(Item)
+        .set({ view: () => "view + 1" ,
+            updatedAt: currentUpdatedAt // 여기서는 updatedAt 안변하게 해줌 -- 쿼리빌더 쓰면 애초에 안변해야하는데 이거 안써주면 무슨이유에선지 날짜가 업데이트 되버림 - 이유 불명
+        })
+        .where("id = :id", { id })
+        .execute();
+
+        // item.view = item.view +1; // 1더함
+        // await this.itemRepository.save(item); // nest js 가 주입된 리포지토리로 데이터베이스 접근 가능한이유는 TypeORM 라이브러리 가 제공하는 의존성 주입(@InjectRepository)의 메커니즘 덕분 
         return item.user;
     }
 
@@ -188,6 +213,8 @@ export class ItemsController {
     return this.itemsService.createItem(createItemDto, imgList, req.user); // 이미지 데이터중 필요한 주소를 고름
 }
 
+
+
     @Patch('/myItems/patch/item/:id') // 아이템 수정하는 기능  -> status랑 category string처리해서 반영 잘해주기!!!!!
     @UsePipes(ValidationPipe)
     @UseInterceptors(FilesInterceptor('image')) // 여기서 파일을 가져옴  ('image' == postman 에서 키랑 같다)키를 가진놈을 인터셉트하는것
@@ -303,6 +330,13 @@ export class ItemsController {
         @Query() searchItemDto: SearchItemDto, @Query('page') page:number, @Query('pageSize') pageSize: number = 10 
     ): Promise <Item[]|boolean>{
         return this.itemsService.getHistory(req.user, searchItemDto, page, pageSize);
+    }
+
+    @Get('/record/:id')
+    async getRecord(
+        @Param('id') id:number
+    ): Promise <Item[]>{
+        return this.itemsService.getRecord(id);
     }
 
     @Get('comment/:id') // 여기서 아이디는 item의 아이디이다.

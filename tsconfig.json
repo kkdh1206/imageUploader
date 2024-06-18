@@ -17,6 +17,6 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "resolveJsonModule": true,  // 이걸 해줘서 json 파일을 읽을 수가 있다.
+    "resolveJsonModule": true  // 이걸 해줘서 json 파일을 읽을 수가 있다.
   }
 }
