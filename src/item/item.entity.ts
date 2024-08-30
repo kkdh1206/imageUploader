@@ -12,7 +12,7 @@ export class Item extends BaseEntity{
     @Column()
     title: string;  // 이름으로 검색 만듬
 
-    @Column()
+    @Column({ type: 'longtext' })
     description: string;
 
     @CreateDateColumn({ name: 'created_at' })
@@ -32,6 +32,9 @@ export class Item extends BaseEntity{
 
     @Column()
     quality: ItemQuality; 
+
+    @Column()
+    buy: Boolean;
 
     @Column()
     sold: Boolean;

@@ -27,7 +27,7 @@ export class AuthService {
                 'username' : users[i].username, 
                 'Email' : users[i].Email,
                 'status' : users[i].userstatus,
-                'online' : users[i].online
+                // 'online' : users[i].online
             }
                 needList.push(needs);   
             }
@@ -196,6 +196,18 @@ export class AuthService {
         console.log(user.requests);
         await this.userRepository.save(user); // 변경내용 저장
         return user.requests;
+    }
+
+    async getAd(uid){
+        const user = await this.userRepository.findOne({where: {uid: uid}});
+        return user.ad;
+    }
+
+    async patchAd(uid, patchAd){
+        const user = await this.userRepository.findOne({where: {uid: uid}});
+        user.ad = patchAd;
+        await this.userRepository.save(user);
+        return user.ad;
     }
     
 }

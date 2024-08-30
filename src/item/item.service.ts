@@ -25,16 +25,41 @@ export class ItemsService {
 
      async getAllItems (req,searchItemDto:SearchItemDto, page:number, pageSize:number): Promise<Item[]|boolean> {
         const user = await this.userRepository.findOne({where: {uid :req.uid}})
-        const {title, sort, status} = searchItemDto;
+        const {title, sort, status, buy} = searchItemDto;
         var realStatus = this.convert.statusConvert(status)
-        const items = await this.itemRepository.find({where: { 
-            status: realStatus,
-            id: Not(In(user.hatedId)),
-            user: {
-                userstatus: Not(In([UserStatus.BANNED, UserStatus.DELETED]))
-              }
-        } });
+        var buySell = true;
+        var items;
+        if(buy=="ALL"){
+            items = await this.itemRepository.find({where: { 
+                status: realStatus,
+                id: Not(In(user.hatedId)),
+    
+                user: {
+                    userstatus: Not(In([UserStatus.BANNED, UserStatus.DELETED]))
+                  }
+            } });
+    
+        }
+        else{
+            if(buy=="SELL"){
+                buySell = false;
+            }
+            else if(buy=="BUY"){
+                buySell = true;
+            }
+            items = await this.itemRepository.find({where: { 
+                status: realStatus,
+                id: Not(In(user.hatedId)),
+    
+                user: {
+                    userstatus: Not(In([UserStatus.BANNED, UserStatus.DELETED]))
+                  },
+                  buy: buySell
+            } });
+    
+        }
 
+        
         return this.itemRepository.searchItem(items,sort, page, pageSize ) // page랑 pageSize 끌고와주기
         
 
@@ -65,13 +90,20 @@ export class ItemsService {
 
     async updateItem(id:number, createItemDto:CreateItemDto, images: Array<string>):Promise<Item>{
         const item = await this.getItemById(id);
-        const {title, description,  price} = createItemDto;
+        const {title, description,  price, buy} = createItemDto;
         const patchImage = item.ImageUrls.concat(images) // 두 배열 합침
+        
+        if(buy == "true"){
+            item.buy = true
+        }
+        else{
+            item.buy = false
+        }
         item.title = title,
         item.description = description,
         // item.category = category,
         item.price = price,
-        item.ImageUrls = patchImage
+        item.ImageUrls = patchImage,
         // item.status = status,
         
             
@@ -100,7 +132,7 @@ export class ItemsService {
     }
 
     async getSearchedItem(searchItemDto:SearchItemDto,page:number,pageSize:number): Promise<Item[]|boolean>{
-        const { title,  sort, status } = searchItemDto;
+        const { title,  sort, status, buy } = searchItemDto;
         const processedTitle = title.replace(/\s+/g, '').toLowerCase();
         var realStatus = this.convert.statusConvert(status)
         // console.log(title);

@@ -27,10 +27,10 @@ export class AuthController {
         return this.authService.checkUsername(username); // 가능 불가능을 ture false로 반환해줌
     }
 
-    @Get('/userid/:id') // 파이어베이스에서 유저네임 등록 및 중복여부 확인  -- 회원가입 전에 닉네임 만들기
-    async getUserById(@Param('id') id ):Promise<User>{ // 이거 통과안되면 회원가입 안되게 만들기
+    @Get('/userid/:id') 
+    async getUserById(@Param('id') id ):Promise<User>{ 
         const user = await this.userRepository.findOneBy({id});
-        return user; // 가능 불가능을 ture false로 반환해줌
+        return user;
     }
 
     @Get('/userUid') 
@@ -90,8 +90,9 @@ export class AuthController {
     signUp(@Req() req,
         @Body(ValidationPipe) authCredentialsDto:AuthCredentialsDto
         ): Promise<void> { 
-            // console.log(authCredentialsDto);
-            // console.log(req.uid);
+            console.log("회원가입")
+            console.log(authCredentialsDto);
+            console.log(req.uid);
         return this.authService.signUp(authCredentialsDto,req.uid);
     }
 
@@ -192,7 +193,6 @@ export class AuthController {
         @Req() req
     ): Promise<string>{
         console.log('-------------------');
-        console.log(data);
         console.log(data)
         console.log('-------------------');
 
@@ -241,6 +241,36 @@ export class AuthController {
         console.log("생성된 토큰 리스트");
         console.log(tokens);
         return tokens;
+    }
+
+    @Get('/ad')
+    @UseGuards(JwtAuthGuard)
+    getAd(
+        @Req() req
+    ): Promise<Boolean>{
+        const user = req.user;
+        return this.authService.getAd(user.uid);
+    }
+
+    @Patch('/ad')
+    @UseGuards(JwtAuthGuard)
+    patchAd(
+        @Req() req,
+        @Body() data
+    ): Promise<Boolean>{
+        const user = req.user;
+        var ad = data.updateAd;
+        console.log("????")
+        console.log(data);
+        
+        if(ad == 'true'){
+            ad=true;
+            console.log("11111")
+        } else{
+            ad=false
+            console.log("22222")
+        }
+        return this.authService.patchAd(user.uid,ad);
     }
 
 

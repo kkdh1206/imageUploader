@@ -13,7 +13,8 @@ export enum ItemType{
     REFRIGERATOR = 'REFRIGERATOR',
     MONITOR = 'MONITOR',
     ROOM = 'ROOM',
-    ETC = 'ETC'
+    ETC = 'ETC',
+    HELP ='HELP'
 }
 
 // export enum SortType{
@@ -26,7 +27,8 @@ export enum ItemType{
 export enum ItemQuality{
     HIGH ='HIGH',
     MID = 'MID',
-    LOW = 'LOW'
+    LOW = 'LOW',
+    NONE = 'NONE'
 }
 
 export enum SoldItemStatus{

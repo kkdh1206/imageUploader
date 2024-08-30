@@ -28,6 +28,13 @@ export class ItemImage {
 
     // 서버에는 config 파일이 있지만 개발할때 안보여주려고 config 처리해주는것!
 
+
+// resize 하는 코드 넣어서 인터넷 다운로드 시간 줄이자!!
+
+
+
+
+
     // const imageExist = Boolean (image)
     // if(!imageExist){
     //   return 'https://i.ibb.co/1KFG5BG/no-image01.gif'
@@ -38,6 +45,13 @@ console.log("이까진 돌아감");
     const formData = new FormData(); // 이미지 파일, dto를 같이 저장하는 타입  -- 데이터 보내는 타입중하나
     const buffer = Buffer.from(image.buffer); // 데이터를 잠시 맡아주는 역할    -- buffer 변수저장기능이라고 알아두기
     // blob은 파일을 까서 데이터화 해서 전송할 수 있게 해줌  --  buffer 로받아서 blob으로 전송한다.
+
+
+// <<<<------- 여기서 아마 줄일듯  ---> 한 50 메가정도 되게 하는것이 이상적이라고 함/?
+
+
+
+
     const blob = new Blob([buffer]); // ????  https://stackoverflow.com/questions/61731218/conversion-of-buffer-data-to-blob-in-nodejs
     formData.append('image',blob ,image.originalname); // body를 만들어줌 == payload 제작
 

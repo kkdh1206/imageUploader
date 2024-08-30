@@ -200,10 +200,18 @@ export class ItemsController {
         // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\.');
     console.log(image);
     console.log(createItemDto); // 이까지 왓는지 확인용
-    const imgList = [];
+    var imgList = [];
+    const {buy} = createItemDto;
+
+    if(buy == "false"){
+        console.log('이까진 왓다 사는 이미지 와야함 왜 안오냐');
+        imgList.push('https://i.ibb.co/pjss0gm/image.jpg'); // 주소 넣어주기 --> 얜 삭제도 안되게 만들어야할듯
+    }
     for (var i=0;i<image.length; i++) {
         imgList.push(await this.itemImage.uploadImage(image[i])); // for문 처리해줌  -> 개수에 맞게 배열을 만들기 위해서
     }
+
+    console.log(imgList, "/////////////");
     // const imageUrl1:string|null = await this.itemImage.uploadImage(image[0]); // 서비스에서 이미지 주소를 받음
     // const imageUrl2:string|null = await this.itemImage.uploadImage(image[1]);
     // const imageUrl3:string|null = await this.itemImage.uploadImage(image[2]);

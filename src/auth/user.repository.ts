@@ -25,6 +25,7 @@ export class UserRepository extends Repository<User> {
             requests: [],
             history: [],
             online: false,
+            ad: false,
             chatAlarm: true,
             categoryAlarm: false,
             userGrade: UserGrade.C0,

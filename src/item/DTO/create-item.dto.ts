@@ -22,7 +22,7 @@ export class CreateItemDto{
     quality: string;
 
     @Column()
-    ananymous: boolean;
+    buy: string;
     
     // @IsNotEmpty() // 기본이미지로라도 둬서 사진 안올라가는 경우 없게하기
     // photo: any;         // 파일을 받아야함

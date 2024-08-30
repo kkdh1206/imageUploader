@@ -5,5 +5,7 @@ export class SearchItemDto{
     sort : string;// SortType;
 
     status: string;
+
+    buy: string;
     
 }

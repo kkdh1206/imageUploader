@@ -21,8 +21,15 @@ export class ItemRepository extends Repository<Item> {
     
     async createItem(createItemDto : CreateItemDto, images: Array<string>, user) : Promise<Item>{
         this.initializeDependencies();
-        const{title, description, category, price, status, quality} = createItemDto;
+        const{title, description, category, price, status, quality,buy} = createItemDto;
+        var buySell;
         // console.log('?!?!?!?!?!?!!?!??!?!?!?!!?!?!?!?!?!?!?!?!!?');
+        if(buy =="false"){
+            buySell = true;
+        }
+        else{
+            buySell = false;
+        }
         var realCategory: ItemType= this.convert.categoryConvert(category);
         var realStatus: ItemStatus= this.convert.statusConvert(status);
         var realQuality: ItemQuality = this.convert.qualityConvert(quality);
@@ -33,6 +40,7 @@ export class ItemRepository extends Repository<Item> {
            status: realStatus, // status 선택가능하게 저
            category: realCategory,
            price,
+           buy: buySell,
            view: 0,
            quality: realQuality,
            user: user,

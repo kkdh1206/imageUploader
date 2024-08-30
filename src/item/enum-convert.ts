@@ -20,6 +20,9 @@ export class enumConvert{
         if(category == 'ETC'){
             return ItemType.ETC
         }
+        if(category == 'HELP'){
+            return ItemType.HELP
+        }
 
     }
     
@@ -53,6 +56,9 @@ export class enumConvert{
         }
         if(quality == 'LOW'){
             return ItemQuality.LOW
+        }
+        if(quality == 'NONE'){
+            return ItemQuality.NONE
         }
     }
     
