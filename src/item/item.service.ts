@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { ItemRepository } from './item.repository';
 import { Item } from './item.entity';
 import { CreateItemDto } from './DTO/create-item.dto';
-import { ItemImage } from './item.Image';
+// import { ItemImage } from './item.Image';
 import { ItemType, ItemStatus, SoldItemStatus } from './item-status.enum';
 import { User } from 'src/auth/user.entity';
 import { In, Like, Not } from 'typeorm';

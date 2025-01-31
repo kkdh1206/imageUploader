@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, ParseIntPipe, Post, Patch, Delete, Upload
 import { ItemsService } from "./item.service";
 import { Item } from "./item.entity";
 import { CreateItemDto } from "./DTO/create-item.dto";
-import { ItemImage } from "./item.Image";
+// import { ItemImage } from "./item.Image";
 import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express/multer";
 import { ItemType, ItemStatus } from "./item-status.enum";
 import { ItemStateValidationPipe } from "./pipes/item-status-validation";
@@ -12,6 +12,7 @@ import { AuthService } from "src/auth/auth.service";
 import { SearchItemDto } from "./DTO/search-item.dto";
 import { ItemComment } from "src/itemComment/itemComment.entity";
 import { ItemRepository } from "./item.repository";
+import { UploadService } from "src/upload/upload.service";
 
 // 플러터 dio 요청시 formData 는 사진 포함할때, json은 사진이 없을때 사용하면 된다.
 
@@ -20,8 +21,9 @@ import { ItemRepository } from "./item.repository";
 @UseGuards(JwtAuthGuard) 
 export class ItemsController {
     constructor(private itemsService: ItemsService,
+        private uploadService : UploadService,
         private itemRepository: ItemRepository,
-                private itemImage: ItemImage
+                // private itemImage: ItemImage
         ){}
 
     
@@ -208,7 +210,7 @@ export class ItemsController {
         imgList.push('https://i.ibb.co/pjss0gm/image.jpg'); // 주소 넣어주기 --> 얜 삭제도 안되게 만들어야할듯
     }
     for (var i=0;i<image.length; i++) {
-        imgList.push(await this.itemImage.uploadImage(image[i])); // for문 처리해줌  -> 개수에 맞게 배열을 만들기 위해서
+        imgList.push(await this.uploadService.uploadImage(image[i])); // for문 처리해줌  -> 개수에 맞게 배열을 만들기 위해서
     }
 
     console.log(imgList, "/////////////");
@@ -233,7 +235,7 @@ export class ItemsController {
          {  
             const imgList = [];
             for (var i=0;i<image.length; i++) {
-                imgList.push(await this.itemImage.uploadImage(image[i]));
+                imgList.push(await this.uploadService.uploadImage(image[i]));
             }
 
             return this.itemsService.updateItem(id,  createItemDto, imgList)

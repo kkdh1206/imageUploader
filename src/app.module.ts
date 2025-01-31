@@ -13,11 +13,17 @@ import { CommentModule } from './comment/comment.module';
 // import { ChatBackEndGateway } from './socket.gateway/socket.gateway';
 import { ItemCommentModule } from './itemComment/itemComment.module';
 import { DeclaresModule } from './declare/declare.module';
+import { UploadModule } from './upload/upload.module';
 // import { GroupModule } from './group_buy/group.module';
 
 
 @Module({
+  
   imports: [ 
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: 'environment.env', // .env 파일을 로드함
+    }),
     ItemsModule,
     TypeOrmModule.forRoot(typeORMConfig),
     ConfigModule.forRoot({isGlobal : true}),
@@ -26,6 +32,7 @@ import { DeclaresModule } from './declare/declare.module';
     DeclaresModule,
     CommentModule,
     ItemCommentModule,
+    UploadModule
     // GroupModule
     // ChatBackEndGateway
   ],

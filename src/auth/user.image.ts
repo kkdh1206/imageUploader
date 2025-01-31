@@ -7,6 +7,7 @@ import { Repository } from "typeorm";
 import { buffer } from "stream/consumers";
 import { Injectable } from "@nestjs/common";
 
+
 @Injectable()
 export class UserImage {
   constructor(
@@ -36,3 +37,5 @@ export class UserImage {
     return data.display_url;
   }
 }
+
+// 지금 FormData 가 import FormData from 'form-data'; 여기서 받는게 아니라서 다른듯

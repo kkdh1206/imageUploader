@@ -3,7 +3,7 @@ import { Like, Repository } from "typeorm";
 import { Item } from "./item.entity";
 import { CreateItemDto } from "./DTO/create-item.dto";
 import { ItemType, ItemStatus, ItemQuality, SoldItemStatus } from "./item-status.enum";
-import { ItemImage } from "./item.Image";
+// import { ItemImage } from "./item.Image";
 import { ItemPaginationService } from "./pagination.service";
 import { enumConvert } from "./enum-convert";
 

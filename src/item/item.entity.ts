@@ -1,6 +1,6 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { ItemType, ItemStatus, ItemQuality, SoldItemStatus } from "./item-status.enum";
-import { ItemImage } from "./item.Image";
+// import { ItemImage } from "./item.Image";
 import { User } from "src/auth/user.entity";
 import { ItemComment } from "src/itemComment/itemComment.entity";
 
