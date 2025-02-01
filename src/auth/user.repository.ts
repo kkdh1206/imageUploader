@@ -18,7 +18,7 @@ export class UserRepository extends Repository<User> {
             userstatus : UserStatus.NORMAL,
             realname: realname,
             studentNumber : studentNumber,
-            imageUrl: 'https://i.ibb.co/LPK9dGH/image.png',
+            imageUrl: 'https://postech-image.s3.ap-northeast-2.amazonaws.com/userImage.png',
             interestedId: [],
             alarmList: [],
             requests: [],

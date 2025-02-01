@@ -11,6 +11,7 @@ import { User } from "src/auth/user.entity";
 import { AuthService } from "src/auth/auth.service";
 import { SearchItemDto } from "./DTO/search-item.dto";
 import { ItemComment } from "src/itemComment/itemComment.entity";
+import { ItemRepository } from "./item.repository";
 
 // 플러터 dio 요청시 formData 는 사진 포함할때, json은 사진이 없을때 사용하면 된다.
 
@@ -19,7 +20,8 @@ import { ItemComment } from "src/itemComment/itemComment.entity";
 @UseGuards(JwtAuthGuard) 
 export class ItemsController {
     constructor(private itemsService: ItemsService,
-                private itemImage: ItemImage
+                private itemImage: ItemImage,
+                private itemRepository: ItemRepository,
         ){}
 
     
@@ -49,8 +51,16 @@ export class ItemsController {
     @Get('itemId/:id')  // id 는 플러터에 있을듯 이걸로 호출해도 되고 아니면 플러터에서 받은 값을 바탕으로 바로 처리해도 될듯 따라서 이건 쓸지 안쓸지는 선택!  
     async getItembyId(@Param('id') id: number) : Promise<User> { 
         var item = await this.itemsService.getItemById(id);
+        const oldUpdatedAt = item.updatedAt;
         item = await this.itemsService.getOwneruid(id);
         // console.log(item.user);
+        item.view +=1;
+        this.itemRepository
+  .createQueryBuilder()
+  .update(Item)
+  .set({ view: item.view,  updatedAt: oldUpdatedAt }) // updatedAt 변경되지 않음
+  .where("id = :id", { id: item.id })
+  .execute();
         return item.user;
     }
 

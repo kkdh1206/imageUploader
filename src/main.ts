@@ -22,7 +22,7 @@ const firebaseParams = { // json(파이어베이스 Admin SDK json 파일) 을 �
 async function bootstrap() { // 파이어베이스를 쓰겠다고 알려주는것
   const app = await NestFactory.create(AppModule);
   const serverConfig = config.get('server');
-  const port = serverConfig.port
+  const port = 3000//serverConfig.port 
   firebase.initializeApp({
     credential: firebase.credential.cert(firebaseParams)
   })

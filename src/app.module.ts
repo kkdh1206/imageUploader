@@ -18,7 +18,9 @@ import { ItemCommentModule } from './itemComment/itemComment.module';
   imports: [ 
     ItemsModule,
     TypeOrmModule.forRoot(typeORMConfig),
-    ConfigModule.forRoot({isGlobal : true}),
+    ConfigModule.forRoot({isGlobal : true,
+    //  envFilePath: 'environment.env', // .env 파일을 로드함
+    }),
     AuthModule,
     BoardsModule,
     CommentModule,
