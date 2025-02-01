@@ -22,6 +22,7 @@ export class ItemImage {
 
   constructor(private configService: ConfigService) {
     this.s3 = new S3({
+      
       accessKeyId: this.configService.get<string>('AWS_ACCESS_KEY_ID'),
       secretAccessKey: this.configService.get<string>('AWS_SECRET_ACCESS_KEY'),
       region: this.configService.get<string>('AWS_REGION'),

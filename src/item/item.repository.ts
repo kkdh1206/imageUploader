@@ -37,7 +37,7 @@ export class ItemRepository extends Repository<Item> {
            user: user,
            soldItemType: SoldItemStatus.VISIBLE,
            sold: false,
-           view:0,
+           view: 0,
            ImageUrls: images // 배열로 저장하려지만 entity에서 배열이 저장 안되서
         }) // 사진여러개면 배열로 주소 저장
         

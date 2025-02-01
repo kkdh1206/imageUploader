@@ -19,7 +19,7 @@ import { ItemCommentModule } from './itemComment/itemComment.module';
     ItemsModule,
     TypeOrmModule.forRoot(typeORMConfig),
     ConfigModule.forRoot({isGlobal : true,
-    //  envFilePath: 'environment.env', // .env 파일을 로드함
+      envFilePath: 'environment.env', // .env 파일을 로드함
     }),
     AuthModule,
     BoardsModule,
