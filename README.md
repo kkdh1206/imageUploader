@@ -22,9 +22,18 @@ It is backend work of the application
 ---
 
 ## 📸 Screenshots 
+Splash screen
+
 <img src="screenshots/splash.png" width="300"/>
+
+Home screen
+
 <img src="screenshots/home.png" width="300"/>  
+
+Category screen
+
 <img src="screenshots/category.png" width="300"/>
+
 For other detail screenshots, you can see to click the Store link below
 ---
 
