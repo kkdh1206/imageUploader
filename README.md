@@ -21,11 +21,20 @@ It is backend work of the application
 
 ---
 
-## 📸 Screenshots  
+## 📸 Screenshots 
+<img src="screenshots/splash.png" width="300"/>
 <img src="screenshots/home.png" width="300"/>  
-<img src="screenshots/chat.png" width="300"/>
+<img src="screenshots/category.png" width="300"/>
+For other detail screenshots, you can see to click the Store link below
 ---
 
+## Notice  
+But the surver fee issue I stopped the server from 2025.04.01
+I already made the snapshot of the website server so if you want to see contact me for my Email
+
+---
+
+ 
 ## Downloawd Link 
 Android PlayStore - https://play.google.com/store/apps/details?id=com.supomarket.supo_market
 
